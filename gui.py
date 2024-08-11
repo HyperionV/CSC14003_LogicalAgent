@@ -1,9 +1,10 @@
 import tkinter as tk
 from tkinter import filedialog
-from main import input
+from program import Program
+from agent import Agent
 
-class WumpusWorldGUI:
-    def __init__(self, master):
+class GUI:
+    def __init__(self, master, program, agent):
         self.master = master
         self.master.title("Wumpus World")
         self.cell_size = 50
@@ -16,11 +17,14 @@ class WumpusWorldGUI:
         self.load_button.pack()
         
         self.map_data = []
+        self.program = program
+        self.agent = agent
 
     def load_map(self):
         file_path = filedialog.askopenfilename(filetypes=[("Text files", "*.txt")])
         if file_path:
-            self.map_data = input(file_path)
+            self.program.load_map(file_path)
+            self.map_data = self.program.map
             self.draw_grid()
 
     def draw_grid(self):
@@ -57,12 +61,14 @@ class WumpusWorldGUI:
             self.canvas.create_text(center_x-10, center_y+10, text="S", font=("Arial", 8), fill="brown")
         if 'B' in content:
             self.canvas.create_text(center_x+10, center_y+10, text="B", font=("Arial", 8), fill="cyan")
-        if 'W' in content:  # 'W' for Whiff (not Wumpus)
+        if 'W_H' in content: 
             self.canvas.create_text(center_x-10, center_y-10, text="W", font=("Arial", 8), fill="gray")
         if 'G_L' in content:
             self.canvas.create_text(center_x+10, center_y-10, text="G_L", font=("Arial", 8), fill="yellow")
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = WumpusWorldGUI(root)
+    program = Program()
+    agent = Agent(program)
+    app = GUI(root, program, agent)
     root.mainloop()
