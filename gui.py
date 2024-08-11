@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, scrolledtext
 from program import Program
 from agent import Agent
 
@@ -10,20 +10,44 @@ class GUI:
         self.cell_size = 75
         self.grid_size = 10
         
-        self.canvas = tk.Canvas(self.master, width=self.cell_size*self.grid_size, height=self.cell_size*self.grid_size)
-        self.canvas.pack()
-        
-         # Create a frame for buttons
-        self.button_frame = tk.Frame(self.master)
-        self.button_frame.pack(fill=tk.X)
+        # Main frame to hold everything
+        self.main_frame = tk.Frame(self.master)
+        self.main_frame.pack(fill=tk.BOTH, expand=True)
 
-        # Create buttons side by side
-        self.load_button = tk.Button(self.button_frame, text="Load Map", command=self.load_map)
-        self.load_button.pack(side=tk.LEFT, fill=tk.X, expand=True)
-
-        self.action_button = tk.Button(self.button_frame, text="Perform Action", command=self.show_action_dialog)
-        self.action_button.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        # Left frame for map and buttons
+        self.left_frame = tk.Frame(self.main_frame)
+        self.left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         
+        self.canvas = tk.Canvas(self.left_frame, width=self.cell_size*self.grid_size, height=self.cell_size*self.grid_size)
+        self.canvas.pack(pady=10)
+        
+        # Create a frame for buttons
+        self.button_frame = tk.Frame(self.left_frame)
+        self.button_frame.pack(fill=tk.X, pady=10)
+
+        self.load_button = tk.Button(self.button_frame, text="Load Map", command=self.load_map, height=2)
+        self.load_button.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+
+        # self.action_button = tk.Button(self.button_frame, text="Perform Action", command=self.perform_action, height=2)
+        # self.action_button.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+
+        self.right_frame = tk.Frame(self.main_frame, width=300)
+        self.right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+        self.chat_output = scrolledtext.ScrolledText(self.right_frame, wrap=tk.WORD, width=40, height=20)
+        self.chat_output.pack(fill=tk.BOTH, expand=True, pady=(0, 15))
+
+        # Frame for input field and send button
+        self.input_frame = tk.Frame(self.right_frame)
+        self.input_frame.pack(fill=tk.X, pady=(0, 5))
+
+        # Larger input field
+        self.action_entry = tk.Entry(self.input_frame, font=('Arial', 12))
+        self.action_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+
+        self.send_button = tk.Button(self.right_frame, text="Send", command=self.perform_action, height=2)
+        self.send_button.pack(fill=tk.X)
+
         self.map_data = []
         self.program = program
         self.load_map()
@@ -87,40 +111,29 @@ class GUI:
 
     def run(self):
         self.master.mainloop()
-        self.show_action_dialog()
 
-    def show_action_dialog(self):
-        dialog = tk.Toplevel(self.master)
-        dialog.title("Perform Action")
-
-        action_label = tk.Label(dialog, text="Enter action:")
-        action_label.pack()
-
-        action_entry = tk.Entry(dialog)
-        action_entry.pack()
-
-        def perform_action():
-            action = action_entry.get()
-            result = self.program.action(action)
-            if result is not None:
-                if isinstance(result, dict):
-                    self.show_knowledge_base(result)
-                else:
-                    self.show_message("Invalid action")
-            dialog.destroy()
-
-        perform_button = tk.Button(dialog, text="Perform", command=perform_action)
-        perform_button.pack()
+    def perform_action(self):
+        action = self.action_entry.get()
+        self.chat_output.insert(tk.END, f"Action: {action}\n")
+        result = self.program.action(action)
+        if result is not None:
+            if isinstance(result, dict):
+                self.show_knowledge_base(result)
+            else:
+                self.chat_output.insert(tk.END, f"Result: {result}\n")
+        else:
+            self.chat_output.insert(tk.END, "Invalid action\n")
+        self.chat_output.insert(tk.END, "\n")
+        self.chat_output.see(tk.END)
+        self.action_entry.delete(0, tk.END)
+        self.reload_map()
 
     def show_knowledge_base(self, kb):
-        kb_dialog = tk.Toplevel(self.master)
-        kb_dialog.title("Knowledge Base")
+        kb_text = "Knowledge Base:\n"
         for pos, content in kb.items():
-            label = tk.Label(kb_dialog, text=f"Position {pos}: {content}")
-            label.pack()
+            kb_text += f"Position {pos}: {content}\n"
+        self.chat_output.insert(tk.END, kb_text + "\n")
 
     def show_message(self, message):
-        message_dialog = tk.Toplevel(self.master)
-        message_dialog.title("Message")
-        label = tk.Label(message_dialog, text=message)
-        label.pack()
+        self.chat_output.insert(tk.END, f"Message: {message}\n\n")
+        self.chat_output.see(tk.END)

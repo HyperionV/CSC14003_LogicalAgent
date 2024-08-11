@@ -33,12 +33,11 @@ class Program:
         self.score -= 10
         if mv == 'L':
             self.agent_direction = (self.agent_direction + 3) % 4
-            return None
+            return "Turned left"
         elif mv == 'R':
             self.agent_direction = (self.agent_direction + 1) % 4
-            return None
+            return "Turned right"
         elif mv == 'F':
-            print(self.original_map)
             self.map[self.agent[0]][self.agent[1]] = self.original_map[self.agent[0]][self.agent[1]] if self.agent != [0,0] else '.'
             self.agent = [self.agent[i] + self.direction[self.agent_direction][i] for i in range(2)]
             self.map[self.agent[0]][self.agent[1]] = 'A'
@@ -63,13 +62,14 @@ class Program:
             if self.map[self.agent[0]][self.agent[1]] == 'G':
                 self.score += 5000
                 self.map[self.agent[0]][self.agent[1]] = '.'
+            return "Grab smth"
         elif mv == 'S':
             self.score -= 100
             pos = [self.agent[0] + self.direction[self.agent_direction][0], self.agent[1] + self.direction[self.agent_direction][1]]
-            return 'S' if self.map[pos[0][pos[1]]] == 'W' else None
+            
+            return 'S' if self.map[pos[0][pos[1]]] == 'W' else "Shoot smth"
         elif mv == 'C':
             if self.agent != [0,0]:
-                print('You are not at the starting point')
                 return None
             else:
                 print('You win')
