@@ -11,7 +11,7 @@ class Agent:
             'whiff': False,
             'glow': False
         }
-        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+        for dx, dy in [(-1, 0), (1, 0), (0, -1)]:
             cell = self.program.get_cell(self.x + dx, self.y + dy)
             if cell == 'P':
                 percepts['breeze'] = True
