@@ -158,7 +158,7 @@ class Program:
         return percept
     
     def doAgentAction(self, action):
-        
+        pass
 
         
     def draw_grid(self):
