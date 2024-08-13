@@ -37,6 +37,10 @@ class Action(Enum):
     SHOOT = auto()
     CLIMB = auto()
     HEAL = auto()
+    
+class ItemType(Enum):
+    HEAL = auto()
+    GOLD = auto()
 
 class Environment(Enum):
     WUMPUS = auto()
@@ -89,13 +93,33 @@ class Cell:
     def getPercept(self):
         return self.percept
     
-
+class AgentProperties:
+    def __init__(self, position, direction, health, point, inventory):
+        self.position = position
+        self.direction = direction
+        self.health = health
+        self.point = point
+        self.inventory = inventory
+        
+    def __init__(self):
+        self.position = (0, 0)
+        self.direction = Direction.UP
+        self.health = 100
+        self.point = 0
+        self.inventory = {
+            ItemType.HEAL: 0,
+            ItemType.GOLD: 0
+        }
+        
+        
 
 class Map:
     def __init__(self, width, height):
         self.width = width
         self.height = height
         self.map = [[Cell() for _ in range(width)] for _ in range(height)]
+        self.agentInfo = AgentProperties()
+        
 
     def readMap(self, filename):
         pass
@@ -108,20 +132,87 @@ class Map:
         for i in range(self.height):
             for j in range(self.width):
                 percept = Percept(0)
-                for x in range(-1, 2):
-                    for y in range(-1, 2):
-                        if i + x >= 0 and i + x < self.height and j + y >= 0 and j + y < self.width:
-                            obj = self.map[i + x][j + y].getObjects()
-                            if obj[Environment.WUMPUS] > 0:
-                                percept |= Percept.STENCH
-                            if obj[Environment.PIT] > 0:
-                                percept |= Percept.BREEZE
-                            if obj[Environment.POISON] > 0:
-                                percept |= Percept.WHIFF
-                            if obj[Environment.HEAL] > 0:
-                                percept |= Percept.GLOW
+                for x, y in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                    if i + x >= 0 and i + x < self.height and j + y >= 0 and j + y < self.width:
+                        obj = self.map[i + x][j + y].getObjects()
+                        if obj[Environment.WUMPUS] > 0:
+                            percept |= Percept.STENCH
+                        if obj[Environment.PIT] > 0:
+                            percept |= Percept.BREEZE
+                        if obj[Environment.POISON] > 0:
+                            percept |= Percept.WHIFF
+                        if obj[Environment.HEAL] > 0:
+                            percept |= Percept.GLOW
                 self.map[i][j].updatePercept(percept)
-    
+                
+    def agentDo(self, action):
+        if action == Action.FORWARD:
+            x, y = self.agentInfo.position
+            if self.agentInfo.direction == Direction.UP:
+                x -= 1
+            elif self.agentInfo.direction == Direction.DOWN:
+                x += 1
+            elif self.agentInfo.direction == Direction.LEFT:
+                y -= 1
+            elif self.agentInfo.direction == Direction.RIGHT:
+                y += 1
+            if x >= 0 and x < self.height and y >= 0 and y < self.width:
+                self.agentInfo.position = (x, y)
+                return True, self.agentInfo
+            return False, self.agentInfo
+            
+        elif action == Action.TURN_RIGHT:
+            self.agentInfo.direction = turnRight(self.agentInfo.direction)
+            return True, self.agentInfo
+        
+        elif action == Action.TURN_LEFT:
+            self.agentInfo.direction = turnLeft(self.agentInfo.direction)
+            return True, self.agentInfo
+        
+        elif action == Action.GRAB:
+            x, y = self.agentInfo.position
+            if self.map[x][y].hasObject(Environment.GOLD):
+                self.map[x][y].removeObject(Environment.GOLD)
+                self.agentInfo.inventory[ItemType.GOLD] += 1
+                return True, self.agentInfo
+            elif self.map[x][y].hasObject(Environment.HEAL):
+                self.map[x][y].removeObject(Environment.HEAL)
+                self.agentInfo.inventory[ItemType.HEAL] += 1
+                return True, self.agentInfo
+            else:
+                return False, self.agentInfo
+            
+        elif action == Action.SHOOT:
+            x, y = self.agentInfo.position
+            nextX, nextY = x, y
+            if self.agentInfo.direction == Direction.UP:
+                nextX -= 1
+            elif self.agentInfo.direction == Direction.DOWN:
+                nextX += 1
+            elif self.agentInfo.direction == Direction.LEFT:
+                nextY -= 1
+            elif self.agentInfo.direction == Direction.RIGHT:
+                nextY += 1
+            if nextX >= 0 and nextX < self.height and nextY >= 0 and nextY < self.width:
+                if self.map[nextX][nextY].hasObject(Environment.WUMPUS):
+                    self.map[nextX][nextY].removeObject(Environment.WUMPUS)
+                    return True, self.agentInfo
+            return False, self.agentInfo
+
+        elif action == Action.CLIMB:
+            x, y = self.agentInfo.position
+            if x == 0 and y == 0:
+                return True, self.agentInfo
+            return False, self.agentInfo
+        
+        elif action == Action.HEAL:
+            if self.agentInfo.inventory[ItemType.HEAL] > 0:
+                self.agentInfo.health += 50
+                self.agentInfo.health = min(self.agentInfo.health, 100)
+                self.agentInfo.inventory[ItemType.HEAL] -= 1
+                return True, self.agentInfo
+            return False, self.agentInfo
+        
 class KB:
     def __init__(self, map):
         self.mapStatus = [{
@@ -165,62 +256,54 @@ class KB:
             if self.percept[x][y] & Percept.STENCH:
                 clause = []
                 # If there is a stench in the cell, there is a wumpus in one of the adjacent cells
-                for i in range(-1, 2):
-                    for j in range(-1, 2):
-                        if i * j == 0 and x + i >= 0 and x + i < self.map.height and y + j >= 0 and y + j < self.map.width:
-                            clause.append(literalToInt(x + i, y + j, Environment.WUMPUS))
+                for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                    if i * j == 0 and x + i >= 0 and x + i < self.map.height and y + j >= 0 and y + j < self.map.width:
+                        clause.append(literalToInt(x + i, y + j, Environment.WUMPUS))
                 self.solver.add_clause(clause)
             else:
                 # If there is no stench in the cell, there is no wumpus in the adjacent cells
-                for i in range(-1, 2):
-                    for j in range(-1, 2):
-                        if i * j == 0 and x + i >= 0 and x + i < self.map.height and y + j >= 0 and y + j < self.map.width:
-                            self.solver.add_clause([-literalToInt(x + i, y + j, Environment.WUMPUS)])
+                for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                    if i * j == 0 and x + i >= 0 and x + i < self.map.height and y + j >= 0 and y + j < self.map.width:
+                        self.solver.add_clause([-literalToInt(x + i, y + j, Environment.WUMPUS)])
 
             if self.percept[x][y] & Percept.BREEZE:
                 clause = []
                 # If there is a breeze in the cell, there is a pit in one of the adjacent cells
-                for i in range(-1, 2):
-                    for j in range(-1, 2):
-                        if i * j == 0 and x + i >= 0 and x + i < self.map.height and y + j >= 0 and y + j < self.map.width:
-                            clause.append(literalToInt(x + i, y + j, Environment.PIT))
+                for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                    if i * j == 0 and x + i >= 0 and x + i < self.map.height and y + j >= 0 and y + j < self.map.width:
+                        clause.append(literalToInt(x + i, y + j, Environment.PIT))
                 self.solver.add_clause(clause)
             else:
                 # If there is no breeze in the cell, there is no pit in the adjacent cells
-                for i in range(-1, 2):
-                    for j in range(-1, 2):
-                        if i * j == 0 and x + i >= 0 and x + i < self.map.height and y + j >= 0 and y + j < self.map.width:
-                            self.solver.add_clause([-literalToInt(x + i, y + j, Environment.PIT)])
+                for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                    if i * j == 0 and x + i >= 0 and x + i < self.map.height and y + j >= 0 and y + j < self.map.width:
+                        self.solver.add_clause([-literalToInt(x + i, y + j, Environment.PIT)])
 
             if self.percept[x][y] & Percept.WHIFF:
                 clause = []
                 # If there is a whiff in the cell, there is a poison in one of the adjacent cells
-                for i in range(-1, 2):
-                    for j in range(-1, 2):
-                        if i * j == 0 and x + i >= 0 and x + i < self.map.height and y + j >= 0 and y + j < self.map.width:
-                            clause.append(literalToInt(x + i, y + j, Environment.POISON))
+                for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                    if i * j == 0 and x + i >= 0 and x + i < self.map.height and y + j >= 0 and y + j < self.map.width:
+                        clause.append(literalToInt(x + i, y + j, Environment.POISON))
                 self.solver.add_clause(clause)
             else:
                 # If there is no whiff in the cell, there is no poison in the adjacent cells
-                for i in range(-1, 2):
-                    for j in range(-1, 2):
-                        if i * j == 0 and x + i >= 0 and x + i < self.map.height and y + j >= 0 and y + j < self.map.width:
-                            self.solver.add_clause([-literalToInt(x + i, y + j, Environment.POISON)])
+                for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                    if i * j == 0 and x + i >= 0 and x + i < self.map.height and y + j >= 0 and y + j < self.map.width:
+                        self.solver.add_clause([-literalToInt(x + i, y + j, Environment.POISON)])
 
             if self.percept[x][y] & Percept.GLOW:
                 clause = []
                 # If there is a glow in the cell, there is a heal potion in the adjacent cells
-                for i in range(-1, 2):
-                    for j in range(-1, 2):
-                        if i * j == 0 and x + i >= 0 and x + i < self.map.height and y + j >= 0 and y + j < self.map.width:
-                            clause.append(literalToInt(x + i, y + j, Environment.HEAL))
+                for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                    if i * j == 0 and x + i >= 0 and x + i < self.map.height and y + j >= 0 and y + j < self.map.width:
+                        clause.append(literalToInt(x + i, y + j, Environment.HEAL))
                 self.solver.add_clause(clause)
             else:
                 # If there is no glow in the cell, there is no heal potion in the adjacent cells
-                for i in range(-1, 2):
-                    for j in range(-1, 2):
-                        if i * j == 0 and x + i >= 0 and x + i < self.map.height and y + j >= 0 and y + j < self.map.width:
-                            self.solver.add_clause([-literalToInt(x + i, y + j, Environment.HEAL)])
+                for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                    if i * j == 0 and x + i >= 0 and x + i < self.map.height and y + j >= 0 and y + j < self.map.width:
+                        self.solver.add_clause([-literalToInt(x + i, y + j, Environment.HEAL)])
             
         self.solver = Glucose3()
 
@@ -250,4 +333,6 @@ class KB:
 class Agent:
     # Hoang ganh
     def __init__(self, map, kb):
+        self.kb = kb
+        self.agentInfo = AgentProperties()
         pass
