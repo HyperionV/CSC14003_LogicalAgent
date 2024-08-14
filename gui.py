@@ -4,11 +4,11 @@ from tkinter import scrolledtext
 from tkinter import ttk
 import pyglet
 
-
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("assets")
 pyglet.options['win32_gdi_font'] = True
 pyglet.font.add_file("fonts/Montserrat-Bold.ttf")
+
 
 class Gui:
     # constructor

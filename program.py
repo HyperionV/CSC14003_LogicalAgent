@@ -1,7 +1,9 @@
 from Utils import *
 from Cell import Cell
-from Agent import AgentProperties
-from Gui import Gui
+from agent import AgentProperties
+from agent import Agent
+from agent import KB
+from gui import Gui
 import tkinter as tk
 
 class Program:
@@ -14,6 +16,7 @@ class Program:
         self.canvas = self.Gui.getCanvas()
         self.loadObjectsImage()
         self.load(filename)
+        # self.agent = Agent(width, height)
 
     
     def run(self):
@@ -74,7 +77,20 @@ class Program:
                         if obj[Environment.HEAL] > 0:
                             percept |= Percept.GLOW
                 self.map[i][j].updatePercept(percept)
-                
+
+    def updatePerceptInPos(self, i, j):
+        for x, y in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            if i + x >= 0 and i + x < self.height and j + y >= 0 and j + y < self.width:
+                obj = self.map[i + x][j + y].getObjects()
+                if obj[Environment.WUMPUS] > 0:
+                    percept |= Percept.STENCH
+                if obj[Environment.PIT] > 0:
+                    percept |= Percept.BREEZE
+                if obj[Environment.POISON] > 0:
+                    percept |= Percept.WHIFF
+                if obj[Environment.HEAL] > 0:
+                    percept |= Percept.GLOW
+        self.map[i][j].updatePercept(percept)
     def agentDo(self, action):
         if action == Action.FORWARD:
             x, y = self.agentInfo.getPosition()
