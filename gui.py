@@ -13,6 +13,7 @@ pyglet.font.add_file("fonts/Montserrat-Bold.ttf")
 class Gui:
     # constructor
     def __init__(self, program):
+        self.filename = "input.txt"
         self.program = program
         self.window = Tk()
         self.window.title("Findin10Cent")
@@ -21,6 +22,9 @@ class Gui:
         self.window.configure(bg = "#171435")
         self.init()
         self.window.resizable(False, False)
+    
+    def clearMessage(self):
+        self.messsageOutput.delete(1.0, END)
         
         
     def relative_to_assets(self, path: str) -> Path:
@@ -43,67 +47,39 @@ class Gui:
             self.pauseresume_button_clicked()
         elif btn_name == "update":
             self.updateButtonClicked()
-        elif btn_name == "previous":
-            self.previousButtonClicked()
-        # elif btn_name == "forward":
-        #     self.forwardButtonClicked()
-        
+        elif btn_name == "reset":
+            self.resetButtonClicked()
+        elif btn_name == "forward":
+            self.forwardButtonClicked()
+
+    def pauseresume_button_clicked(self):
+        pass    
         
     def forwardButtonClicked(self):
         pass
-        # if(self.path is not None):
-        #     if self.level != "Level 4":    
-        #         self.map.nextStep()
-        #     else:
-        #         self.handleLevel4(True)
         
-    def previousButtonClicked(self):
-        pass
-        # if(self.path is not None):
-        #     if self.level != "Level 4":
-        #         self.map.previousStep()
-        #         currentStep = self.map.getCurrentStep()
-        #         if(currentStep < 1):
-        #                 self.changePauseresumeState("pause")
-        #     else:
-        #         self.handleLevel4(False)
-        #         currentStep = self.map.getCurrentStep()
-        #         if(currentStep < len(self.path)):
-        #                 self.changePauseresumeState("pause")  
+    def resetButtonClicked(self):
+        self.clearMessage()
+        self.program.load(self.filename)
             
             
     def updateButtonClicked(self):
-        self.path = None
-        self.goalList = None
-        self.changePauseresumeState("pause")
-        self.level = self.level_option.get()
-        filePath = self.getMazeOption()
-        self.map.load(filePath)
-        graph = self.graph_option.get()
-        # if self.level != "Level 4":
-        #     self.path = self.map.getPath(self.level, graph)
-        # else:
-        #     self.path, self.goalList = self.map.getPath(self.level, graph)
-        
-        # self.showPathInfo()
+        self.clearMessage()
+        self.filename = self.getMazeOption()
+        self.program.load(self.filename)
     
-    def show_message(self, message):
-        self.chat_output.insert(ttk.END, f"Message: {message}\n\n")
-        self.chat_output.see(ttk.END)
-
         
     def getMazeOption(self):
-        pre = ''.join(self.level.split(' ')).lower() + '.txt'
         maze = self.maze_option.get()
         path = {
-            "Matrix 1": "input1_",
-            "Matrix 2": "input2_",
-            "Matrix 3": "input3_",
-            "Matrix 4": "input4_",
-            "Matrix 5": "input5_",
+            "Map 1": "input1.txt",
+            "Map 2": "input2.txt",
+            "Map 3": "input3.txt",
+            "Map 4": "input4.txt",
+            "Map 5": "input5.txt",
             "Read from file": "input.txt"
         }
-        return path.get(maze) + pre if maze != "Read from file" else path.get(maze)
+        return path.get(maze) 
         
     # ~ FUNCTIONS FOR BUTTONS FOR CHANGING TABS ~
     def changePauseresumeState(self, state):
@@ -113,35 +89,9 @@ class Gui:
         elif state == "resume":
             self.pauseresume_button.config(image=self.resume_image,text="Resume")
         
-    def pauseresume_button_clicked(self):
-        pass
-        # if(self.path is None or self.path == -1):
-        #     return
-        # if(self.level == "Level 4"):
-        #     if(self.map.getCurrentStep() > len(self.path)):
-        #         return
-        # else:    
-        #     if(self.map.getCurrentStep() > 0  or self.path is None):
-        #         return
+
 
         
-        # speed = self.speed_option.get()
-        # autoSpeed = 300
-        # if(speed == "Medium"):
-        #     autoSpeed = 150
-        # elif(speed == "Fast"):
-        #     autoSpeed = 100
-        # self.pauseresume_button.config(image=self.resume_image,text="Resume") 
-        # if(self.level == "Level 4"):
-        #     totalStep = 0
-        #     for i in range (len(self.path)):
-        #         totalStep += len(self.path[i])
-        #     self.map.autoRunlvl4(autoSpeed, totalStep)
-        # else:
-        #     self.map.autoRun(autoSpeed)
-
-        
-
     def init(self):
         self.sidebar = Canvas(
             self.window,
@@ -179,7 +129,7 @@ class Gui:
             justify="center",
             font=("Montserrat-Bold", 14 * -1)
         )
-        self.maze_option.current(0)
+        self.maze_option.current(5)
         self.maze_option.place(
             x=970.0,
             y=125.0,
@@ -258,17 +208,17 @@ class Gui:
         ########################################
 
         ###### (iii)  PREVIOUS BUTTON ##########
-        self.Previous_button_image = PhotoImage(
+        self.Reset_button_image = PhotoImage(
             file=self.relative_to_assets("button_6.png"))
-        self.Previous_button = Button(
-            image=self.Previous_button_image,
+        self.Reset_button = Button(
+            image=self.Reset_button_image,
             borderwidth=0,
             bg="#171435",
             highlightthickness=0,
-            command= lambda: self.handle_button_press("previous"),
+            command= lambda: self.handle_button_press("reset"),
             relief="flat"
         )
-        self.Previous_button.place(
+        self.Reset_button.place(
             x=968.0,
             y=250.0,
             width=40.18182373046875,
@@ -278,7 +228,7 @@ class Gui:
             10.0,
             335.0,
             anchor="nw",
-            text="Knowledge base",
+            text="Infomation",
             fill="#FFFFFF",
             font=("Montserrat-Bold", 12 * -1)
         )

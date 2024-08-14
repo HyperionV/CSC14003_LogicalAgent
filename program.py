@@ -13,13 +13,14 @@ class Program:
         self.Gui = Gui(self)
         self.canvas = self.Gui.getCanvas()
         self.loadObjectsImage()
-        self.init(filename)
+        self.load(filename)
+
     
     def run(self):
         self.Gui.run()
         
     
-    def init(self, filename):
+    def load(self, filename):
         self.map = [[Cell() for _ in range(self.width)] for _ in range(self.height)]
         self.agentInfo = AgentProperties()
         self.readMap(filename)
@@ -132,14 +133,14 @@ class Program:
                 if self.map[nextX][nextY].hasObject(Environment.WUMPUS):
                     self.map[nextX][nextY].removeObject(Environment.WUMPUS)
                     self.animateShoot(nextX, nextY)
-                    self.showMessageOnGui(action)
+                    self.showMessageOnGui(self, action)
                     return True, self.agentInfo
             return False, self.agentInfo
 
         elif action == Action.CLIMB:
             x, y = self.agentInfo.getPosition()
             if x == 0 and y == 0:
-                self.showMessageOnGui(action)
+                self.showMessageOnGui(self, action)
                 return True, self.agentInfo
             return False, self.agentInfo
         
@@ -149,7 +150,7 @@ class Program:
                 health = min(health + 50, 100)
                 self.agentInfo.setHealth(health)
                 self.agentInfo.adjustInventory(ItemType.HEAL, -1)
-                self.showMessageOnGui(action)
+                self.showMessageOnGui(self, action)
                 return True, self.agentInfo
             return False, self.agentInfo
         
@@ -172,6 +173,7 @@ class Program:
                     self.canvas.create_rectangle(x1, y1, x2, y2, fill="white" if not adjacent else "light yellow", outline="black")
                     self.drawCellContent(x1, y1, cellContent)
         self.drawAgent()      
+
         
 
     def drawAgent(self):
@@ -204,19 +206,19 @@ class Program:
         message = ""
         message += "Action: "
         if action == Action.FORWARD:
-            message += "Move forward"
+            message += "Moved forward"
         elif action == Action.TURN_RIGHT:
-            message += "Turn right"
+            message += "Turned right"
         elif action == Action.TURN_LEFT:
-            message += "Turn left"
+            message += "Turned left"
         elif action == Action.GRAB:
-            message += "Grab"
+            message += "Grabbed"
         elif action == Action.SHOOT:
-            message += "Shoot"
+            message += "Shot"
         elif action == Action.CLIMB:
-            message += "Climb"
+            message += "Climbbed"
         elif action == Action.HEAL:
-            message += "Heal"
+            message += "Healed"
         message += "\n"
         message += "Position: "
         message +=  str(self.convertMapPosition(agentPos[0], agentPos[1]))
@@ -233,6 +235,9 @@ class Program:
             message += "Whiff, "
         if percept & Percept.GLOW:
             message += "Glow, "
+        point = self.agentInfo.getPoint()
+        message += "\n"
+        message += "Score: " + str(point)
         message += "\n\n"
         self.Gui.showMessage(message)
 
@@ -247,9 +252,6 @@ class Program:
         ystart = xStart * self.cellSize + 45
         nexty = nextX * self.cellSize + 45
         nextx = nextY * self.cellSize + 45
-
-
-
 
         xDiff = ((nextx - xstart)  / steps)
         yDiff = ((nexty - ystart) / steps)
