@@ -1,204 +1,270 @@
-from room import Room
+from Utils import *
+from Cell import Cell
+from Agent import AgentProperties
+from Gui import Gui
+import tkinter as tk
+
 class Program:
-    def __init__(self, canvas):
-        self.canvas = canvas
-        self.matrix = None
-        self.map = None
-        # self.original_map = None
-        self.agent = [0,0]
-        self.score = 0
-        self.health = 100
-        self.direction = [(0, 1), (1, 0), (0, -1)]
-        self.agent_direction = 0
+    def __init__(self, width, height, filename):
+        self.objectImage = {}
+        self.cellSize = 90
+        self.width = width
+        self.height = height
+        self.Gui = Gui(self)
+        self.canvas = self.Gui.getCanvas()
+        self.loadObjectsImage()
+        self.init(filename)
     
-    def getObjectsStrArray(self, cellStr):
-        cell_objects = []
-        cell = cellStr.copy()
-        # Handle multiple Wumpus (W)
-        count_wumpus = cell.count('W')
-        if count_wumpus > 0:
-            cell_objects.extend(['W'] * count_wumpus)
-            cell = cell.replace('W', '')
-
-        # Handle Poisonous Gas (P_G)
-        if "P_G" in cell:
-            cell_objects.append('P_G')
-            cell = cell.replace('P_G', '')
-
-        # Handle Healing Potions (H_P)
-        if "H_P" in cell:
-            cell_objects.append('H_P')
-            cell = cell.replace('H_P', '')
-
-        # Handle Pit (P)
-        if "P" in cell:
-            cell_objects.append('P')
-            cell = cell.replace('P', '')
-
-        # Handle Agent (A)
-        if "A" in cell:
-            cell_objects.append('A')
-            cell = cell.replace('A', '')
-
-        # Handle Gold (G)
-        if "G" in cell:
-            cell_objects.append('G')
-            cell = cell.replace('G', '')
+    def run(self):
+        self.Gui.run()
         
-        return cell_objects
+    
+    def init(self, filename):
+        self.map = [[Cell() for _ in range(self.width)] for _ in range(self.height)]
+        self.agentInfo = AgentProperties()
+        self.readMap(filename)
+        self.updatePercept()
+        self.drawMap()
 
-    def convertMatrixToMap(self):
-        # initialize map with size = matrix and fill with None
-        matrix = [[None for _ in range(len(self.matrix))] for _ in range(len(self.matrix[0]))]
+    def loadObjectsImage(self):
+        self.objectImage[Environment.WUMPUS] = tk.PhotoImage(file=ASSET_PATH + "wumpus.png")
+        self.objectImage[Environment.PIT] = tk.PhotoImage(file=ASSET_PATH + "pit.png")
+        
+        self.objectImage[Environment.POISON] = tk.PhotoImage(file=ASSET_PATH + "poision.png")
+        self.objectImage[ItemType.HEAL] = tk.PhotoImage(file=ASSET_PATH + "health.png")
+        self.objectImage[ItemType.GOLD] = tk.PhotoImage(file=ASSET_PATH + "gold.png")
+        self.objectImage[ItemType.ARROW] = []
+        self.objectImage[Environment.AGENT] = []
+        for i in range (4):
+            self.objectImage[ItemType.ARROW].append(tk.PhotoImage(file=ASSET_PATH + "arrow" + str(i) + ".png"))
+        for i in range (4):
+            self.objectImage[Environment.AGENT].append(tk.PhotoImage(file=ASSET_PATH + "agent" + str(i) + ".png"))
+    def convertMatrixToMap(self, matrix):
+        for i in range(self.height):
+            for j in range(self.width):
+                cell = matrix[i][j]
+                cell_objects = getObjectsEnumArray(cell)
+                self.map[i][j].addObjects(cell_objects)
 
-        for i in range(len(self.matrix)):
-            for j in range(len(self.matrix[i])):
-                cell = self.matrix[i][j]
-                cell_objects = self.getObjectsStrArray(cell)
-                self.map[i][j] = Room((i, j), len(self.matrix), cell_objects)
-
-
-    def load_map(self, filename):
+    def readMap(self, filename):
         with open(filename, 'r') as f:
-            self.matrix = []
+            matrix = []
             for line in f:
-                self.matrix.append(line.strip().split('.'))
-        # if self.original_map is None:
-        #     self.original_map = [[i for i in j] for j in self.map]
-        self.convertMatrixToMap()
+                matrix.append(line.strip().split('.'))
+        self.convertMatrixToMap(matrix)
+
+    def getMap(self):
+        return self.map
     
-    def reload_map(self):
-        self.map_data = self.program.map
-        self.draw_grid()
-
-
-    def set_gui(self, gui):
-        self.gui = gui
-
-    def get_cell(self, x, y):
-        if self.map is not None and 0 <= x < self.map.shape[0] and 0 <= y < self.map.shape[1]:
-            return self.map[x, y]
-        else:
-            return None
-        
-    def check_valid_cell(self, cell):
-        return 0 <= cell[0] < 10 and 0 <= cell[1] < 10
-    
-    def action(self, mv):
-        self.score -= 10
-        if mv == 'L':
-            self.agent_direction = (self.agent_direction + 3) % 4
-            return "Turned left"
-        elif mv == 'R':
-            self.agent_direction = (self.agent_direction + 1) % 4
-            return "Turned right"
-        elif mv == 'F':
-            self.map[self.agent[0]][self.agent[1]] = self.original_map[self.agent[0]][self.agent[1]] if self.agent != [0,0] else '.'
-            self.agent = [self.agent[i] + self.direction[self.agent_direction][i] for i in range(2)]
-            self.map[self.agent[0]][self.agent[1]] = 'A'
-
-            if self.map[self.agent[0]][self.agent[1]] in ['P', 'W']:
-                print('You Deer')
-                return None
-            elif self.map[self.agent[0]][self.agent[1]] == 'P_G':
-                self.heath -= 25
-
-            kb = {}
-            for i in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
-                pos = [i[j] + self.agent[j] for j in range(2)]
-                if self.check_valid_cell(pos):
-                    kb.update({(pos[0], pos[1]): self.map[pos[0]][pos[1]]})
-                else:
-                    continue
-            self.gui.reload_map()
-            print(kb)
-            return kb
-        elif mv == 'G':
-            if self.map[self.agent[0]][self.agent[1]] == 'G':
-                self.score += 5000
-                self.map[self.agent[0]][self.agent[1]] = '.'
-            return "Grab smth"
-        elif mv == 'S':
-            self.score -= 100
-            pos = [self.agent[0] + self.direction[self.agent_direction][0], self.agent[1] + self.direction[self.agent_direction][1]]
+    def updatePercept(self):
+        # Update percept for each cell according to the objects in the adjacent cells
+        for i in range(self.height):
+            for j in range(self.width):
+                percept = Percept(0)
+                for x, y in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                    if i + x >= 0 and i + x < self.height and j + y >= 0 and j + y < self.width:
+                        obj = self.map[i + x][j + y].getObjects()
+                        if obj[Environment.WUMPUS] > 0:
+                            percept |= Percept.STENCH
+                        if obj[Environment.PIT] > 0:
+                            percept |= Percept.BREEZE
+                        if obj[Environment.POISON] > 0:
+                            percept |= Percept.WHIFF
+                        if obj[Environment.HEAL] > 0:
+                            percept |= Percept.GLOW
+                self.map[i][j].updatePercept(percept)
+                
+    def agentDo(self, action):
+        if action == Action.FORWARD:
+            x, y = self.agentInfo.getPosition()
+            if self.agentInfo.getDirection() == Direction.UP:
+                x -= 1
+            elif self.agentInfo.getDirection() == Direction.DOWN:
+                x += 1
+            elif self.agentInfo.getDirection() == Direction.LEFT:
+                y -= 1
+            elif self.agentInfo.getDirection() == Direction.RIGHT:
+                y += 1
+            if x >= 0 and x < self.height and y >= 0 and y < self.width:
+                self.agentInfo.setPosition((x, y))
+                self.showMessageOnGui(action)
+                return True, self.agentInfo
+            return False, self.agentInfo
             
-            return 'S' if self.map[pos[0][pos[1]]] == 'W' else "Shoot smth"
-        elif mv == 'C':
-            if self.agent != [0,0]:
-                return None
+        elif action == Action.TURN_RIGHT:
+            direction = turnRight(self.agentInfo.getDirection())
+            self.agentInfo.setDirection(direction)
+            self.showMessageOnGui(action)
+            return True, self.agentInfo
+        
+        elif action == Action.TURN_LEFT:
+            direction = turnLeft(self.agentInfo.getDirection())
+            self.agentInfo.setDirection(direction)
+            self.showMessageOnGui(action)
+            return True, self.agentInfo
+        
+        elif action == Action.GRAB:
+            x, y = self.agentInfo.getPosition()
+            if self.map[x][y].hasObject(Environment.GOLD):
+                self.map[x][y].removeObject(Environment.GOLD)
+                self.agentInfo.adjustInventory(ItemType.GOLD, 1)
+                return True, self.agentInfo
+            elif self.map[x][y].hasObject(Environment.HEAL):
+                self.map[x][y].removeObject(Environment.HEAL)
+                self.agentInfo.adjustInventory(ItemType.HEAL, 1)
+                self.showMessageOnGui(action)
+                return True, self.agentInfo
             else:
-                print('You win')
-                return None
-        elif mv == 'H':
-            pass
-        else:
-            print('Invalid action')
-            return None            
+                return False, self.agentInfo
+            
+        elif action == Action.SHOOT:
+            x, y = self.agentInfo.getPosition()
+            nextX, nextY = x, y
+            if self.agentInfo.getDirection() == Direction.UP:
+                nextX -= 1
+            elif self.agentInfo.getDirection() == Direction.DOWN:
+                nextX += 1
+            elif self.agentInfo.getDirection() == Direction.LEFT:
+                nextY -= 1
+            elif self.agentInfo.getDirection() == Direction.RIGHT:
+                nextY += 1
+            if nextX >= 0 and nextX < self.height and nextY >= 0 and nextY < self.width:
+                if self.map[nextX][nextY].hasObject(Environment.WUMPUS):
+                    self.map[nextX][nextY].removeObject(Environment.WUMPUS)
+                    self.animateShoot(nextX, nextY)
+                    self.showMessageOnGui(action)
+                    return True, self.agentInfo
+            return False, self.agentInfo
+
+        elif action == Action.CLIMB:
+            x, y = self.agentInfo.getPosition()
+            if x == 0 and y == 0:
+                self.showMessageOnGui(action)
+                return True, self.agentInfo
+            return False, self.agentInfo
         
-    def getRoomPercepts(self, x, y):
-        adj_cell_list = []
-        adj_cell_matrix_pos_list = [(x, y + 1),   # Right
-                                    (x, y - 1),   # Left
-                                    (x - 1, y),   # Up
-                                    (x + 1, y)]   # Down
-
-        for ajd_cell_matrix_pos in adj_cell_matrix_pos_list:
-            if 0 <= ajd_cell_matrix_pos[0] < len(self.map) and 0 <= ajd_cell_matrix_pos[1] < len(self.map[0]):
-                adj_cell_list.append(self.map[ajd_cell_matrix_pos[0]][ajd_cell_matrix_pos[1]])
-
-        adj_cell_list = self.map[x][y].get_adj_cell_list()
-        percept = [0, 0, 0, 0, 0] # [-G, -B, -S, -W_H, -G_L]
-        for i in adj_cell_list:
-            percept[0] = (adj_cell_list[i].isExistGold() == True)
-            percept[1] = (adj_cell_list[i].isExistPit() == True)
-            percept[2] = (adj_cell_list[i].isExistWumpus() == True)
-            percept[3] = (adj_cell_list[i].isExistPoisionousGas() == True)
-            percept[4] = (adj_cell_list[i].isExistHealthPotion() == True)
-
-        return percept
+        elif action == Action.HEAL:
+            if self.agentInfo.inventory[ItemType.HEAL] > 0:
+                health = self.agentInfo.getHealth()
+                health = min(health + 50, 100)
+                self.agentInfo.setHealth(health)
+                self.agentInfo.adjustInventory(ItemType.HEAL, -1)
+                self.showMessageOnGui(action)
+                return True, self.agentInfo
+            return False, self.agentInfo
+        
     
-    def doAgentAction(self, action):
-        pass
 
-        
-    def draw_grid(self):
+    # MAP ON GUI
+    def drawMap(self):
         self.canvas.delete("all")
-        for i in range(self.grid_size):
-            for j in range(self.grid_size):
-                x1 = j * self.cell_size
-                y1 = i * self.cell_size
-                x2 = x1 + self.cell_size
-                y2 = y1 + self.cell_size
+        for i in range(self.height):
+            for j in range(self.width):
+                x1 = j * self.cellSize
+                y1 = i * self.cellSize
+                x2 = x1 + self.cellSize
+                y2 = y1 + self.cellSize
+                agentPos = self.agentInfo.getPosition()
+                adjacent = [i - agentPos[0], j - agentPos[1]] in [[0, 1], [1, 0], [0, -1], [-1, 0]]
 
-                adjacent = [i - self.program.agent[0], j - self.program.agent[1]] in [[0, 1], [1, 0], [0, -1], [-1, 0]]
-
-                if i < len(self.map_data) and j < len(self.map_data[i]):
-                    cell_content = self.map[i][j].getObjects()
+                if i < self.height and j < self.width:
+                    cellContent = self.map[i][j].getObjects()
                     self.canvas.create_rectangle(x1, y1, x2, y2, fill="white" if not adjacent else "light yellow", outline="black")
-                    self.draw_cell_content(x1, y1, x2, y2, cell_content)
+                    self.drawCellContent(x1, y1, cellContent)
+        self.drawAgent()      
+        
+
+    def drawAgent(self):
+        x, y = self.agentInfo.getPosition()
+        print(x, y)
+        direction = self.agentInfo.getDirection()
+        x1 = y * self.cellSize
+        y1 = x * self.cellSize
+        self.canvas.create_image(x1 + 49 ,y1 + 48, image=self.objectImage[Environment.AGENT][direction.value])
+
+    def drawCellContent(self, x1, y1, content):
+        if content[Environment.WUMPUS] > 0:
+            self.canvas.create_image(x1 + 16, y1 + 18, image=self.objectImage[Environment.WUMPUS])
+        if content[Environment.PIT] > 0:
+            self.canvas.create_image(x1 + 45 , y1 + 44, image=self.objectImage[Environment.PIT])
+        if content[Environment.POISON] > 0:
+            self.canvas.create_image(x1 + 16, y1 + 78, image=self.objectImage[Environment.POISON])
+        if content[Environment.GOLD] > 0:
+            self.canvas.create_image(x1 + 76, y1 + 14, image=self.objectImage[ItemType.GOLD])
+        if content[Environment.HEAL] > 0:
+            self.canvas.create_image(x1 + 76, y1 + 76, image=self.objectImage[ItemType.HEAL])
+        return
+
+    def convertMapPosition(self, x, y):
+        mapPos = self.height - x,  y + 1
+        return mapPos         # (1, 1) (1, 2) ... (10, 10) (BL -> TR)
+
+    def showMessageOnGui(self, action):
+        agentPos = self.agentInfo.getPosition()
+        message = ""
+        message += "Action: "
+        if action == Action.FORWARD:
+            message += "Move forward"
+        elif action == Action.TURN_RIGHT:
+            message += "Turn right"
+        elif action == Action.TURN_LEFT:
+            message += "Turn left"
+        elif action == Action.GRAB:
+            message += "Grab"
+        elif action == Action.SHOOT:
+            message += "Shoot"
+        elif action == Action.CLIMB:
+            message += "Climb"
+        elif action == Action.HEAL:
+            message += "Heal"
+        message += "\n"
+        message += "Position: "
+        message +=  str(self.convertMapPosition(agentPos[0], agentPos[1]))
+        message += '\n'
+        message += "Pecrepts: "
+        percept = self.map[agentPos[0]][agentPos[1]].getPercept()
+        if percept & Percept.STENCH:
+            message += "Stench, "
+        if percept & Percept.BREEZE:
+            message += "Breeze, "
+        if percept & Percept.SCREAM:
+            message += "Scream, "
+        if percept & Percept.WHIFF:
+            message += "Whiff, "
+        if percept & Percept.GLOW:
+            message += "Glow, "
+        message += "\n\n"
+        self.Gui.showMessage(message)
 
 
-    def draw_cell_content(self, x1, y1, x2, y2, content):
-        center_x = (x1 + x2) / 2
-        center_y = (y1 + y2) / 2
+    def animateShoot(self, nextX, nextY):
+        steps = 30 
+        delay = 1000 // steps 
 
-        if 'W' in content:
-            self.canvas.create_text(center_x, center_y, text="W", font=("Arial", 12, "bold"), fill="red")
-        if 'P' in content:
-            self.canvas.create_text(center_x, center_y, text="P", font=("Arial", 12, "bold"), fill="black")
-        if 'A' in content:
-            self.canvas.create_text(center_x, center_y, text="A", font=("Arial", 12, "bold"), fill="blue")
-        if 'G' in content:
-            self.canvas.create_text(center_x, center_y, text="G", font=("Arial", 12, "bold"), fill="gold")
-        if 'P_G' in content:
-            self.canvas.create_text(center_x, center_y, text="P_G", font=("Arial", 10, "bold"), fill="purple")
-        if 'H_P' in content:
-            self.canvas.create_text(center_x, center_y, text="H_P", font=("Arial", 10, "bold"), fill="green")
-        if 'S' in content:
-            self.canvas.create_text(center_x-10, center_y+10, text="S", font=("Arial", 8), fill="brown")
-        if 'B' in content:
-            self.canvas.create_text(center_x+10, center_y+10, text="B", font=("Arial", 8), fill="cyan")
-        if 'W_H' in content: 
-            self.canvas.create_text(center_x-10, center_y-10, text="W", font=("Arial", 8), fill="gray")
-        if 'G_L' in content:
-            self.canvas.create_text(center_x+10, center_y-10, text="G_L", font=("Arial", 8), fill="yellow")
+        xStart, yStart = self.agentInfo.getPosition()
+        direction = self.agentInfo.getDirection()
+        xstart = yStart * self.cellSize + 45
+        ystart = xStart * self.cellSize + 45
+        nexty = nextX * self.cellSize + 45
+        nextx = nextY * self.cellSize + 45
+
+
+
+
+        xDiff = ((nextx - xstart)  / steps)
+        yDiff = ((nexty - ystart) / steps)
+
+        arrowId = self.canvas.create_image(xstart, ystart, image=self.objectImage[ItemType.ARROW][direction.value])
+
+        def moveArrow(step):
+            if step <= steps:
+                self.canvas.move(arrowId, xDiff, yDiff)
+                self.canvas.after(delay, moveArrow, step + 1)
+            else:
+                self.canvas.delete(arrowId)
+
+        moveArrow(0)
+    
+
+    def reloadMap(self):
+        self.drawMap()
