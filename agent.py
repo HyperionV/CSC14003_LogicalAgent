@@ -1,4 +1,3 @@
-import program
 from Utils import *
 from pysat.solvers import Glucose3
 from collections import deque
