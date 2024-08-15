@@ -22,7 +22,7 @@ class Program:
         }
         self.loadObjectsImage()
         self.load(filename)
-        # self.agent = Agent(width, height)
+        self.agent = Agent(width, height)
 
     
     def run(self):
@@ -176,7 +176,7 @@ class Program:
         elif action == Action.HEAL:
             if self.agentInfo.inventory[ItemType.HEAL] > 0:
                 health = self.agentInfo.getHealth()
-                health = min(health + 50, 100)
+                health = min(health + 25, 100)
                 self.agentInfo.setHealth(health)
                 self.agentInfo.adjustInventory(ItemType.HEAL, -1)
                 self.showMessageOnGui(self, action)

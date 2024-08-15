@@ -1,6 +1,7 @@
 import program
 from Utils import *
 from pysat.solvers import Glucose3
+from collections import deque
     
 class AgentProperties:
     def __init__(self, position, direction, health, point, inventory):
@@ -186,17 +187,54 @@ class Agent:
         self.kb = KB(width, height)
         self.width, self.height = width, height
         self.agentInfo = AgentProperties()
-        self.agentMap = [[1e9 for y in range(height)] for x in range(width)]
+        self.agentMap = [[1e9 for y in range(height + 5)] for x in range(width + 5)]
         # self.kb.update(mainProg.map[1][1].percept, 1, 1)
         self.safeList = []
         self.poisonList = []
         self.actionList = []
         self.safeList.append((1, 1))
+    def addAction(self, action):
+        self.actionList.append(action)
     def findPath(self, x, y, u, v):
         # BFS j day
-        pass
+        dq = deque()
+        trace = [[(-1, -1) for y in range(self.height + 5)] for x in range(self.width + 5)]
+        dis = [[1e9 for y in range(self.height + 5)] for x in range(self.width + 5)]
+        vis = [[0 for y in range(self.height + 5)] for x in range(self.width + 5)]
+        dx = [1, 0, -1, 0]
+        dy = [0, 1, 0, -1]
+        dq.append((x, y))
+        while len(dq) > 0:
+            cur = dq.popLeft()
+            vis[cur[0]][cur[1]] = 1
+            for k in range(4):
+                row = cur[0] + dx[k]
+                col = cur[1] + dy[k]
+                if self.agentMap[row][col] > 1:
+                    continue
+                weight = self.agentMap[row][col]
+                if not vis[row][col] and dis[cur[0]][cur[1]] + weight < dis[row][col]:
+                    dis[row][col] = dis[cur[0]][cur[1]] + weight
+                    trace[row][col] = cur
+                    if weight == 0:
+                        dq.appendLeft((row, col))
+                    else:
+                        dq.append((row, col))
+        if vis[u][v] == 0:
+            return -1
+        row, col = u, v
+        traceList = []
+        cntPoison = self.agentMap[row][col]
+        # trace not include starting cell
+        while (row, col) != (x, y):
+            traceList.append((row, col))
+            prev = trace[row][col]
+            row, col = prev[0], prev[1]
+            cntPoison += self.agentMap[prev[0]][prev[1]]
+        traceList = traceList[::-1]
+        return traceList, cntPoison
     def inBound(self, x, y):
-        if 0 < x and x <= self.width and 0 < y and y <= self.height:
+        if 0 <= x and x < self.width and 0 <= y and y < self.height:
             return True
         return False
     def isSafe(self, status):
@@ -207,55 +245,90 @@ class Agent:
         if status[Environment.POISON] and self.agentInfo.maxHealth > 25:
             return True
         return False
+    def moveToAdjacentCell(self, fromCell, toCell, mainProg):
+        from_x, from_y = fromCell
+        to_x, to_y = toCell
+        dir = getDirBetweenCells(from_x, from_y, to_x, to_y)
+        rotationOrder = getRotationOrder(self.agentInfo.direction, dir)
+        if len(rotationOrder) > 0:
+            for newDir in rotationOrder:
+                if newDir == Direction.RIGHT:
+                    valid, info = mainProg.agentDo(Action.TURN_RIGHT)
+                    self.agentInfo = info
+                    self.addAction(Action.TURN_RIGHT)
+                elif newDir == Direction.LEFT:
+                    valid, info = mainProg.agentDo(Action.TURN_LEFT)
+                    self.agentInfo = info
+                    self.addAction(Action.TURN_LEFT)
+        valid, info = mainProg.agentDo(Action.FORWARD)
+        if not valid:
+            print('moveToAdjacentCell error')
+            exit(0)
+        self.addAction(Action.FORWARD)
+        self.agentInfo = info
+    def moveToCell(self, from_x, from_y, to_x, to_y, mainProg):
+        res = self.findPath(from_x, from_y, to_x, to_y)
+        if res == -1:
+            return False # invalid
+        traceList, poison = res
+        cur = (from_x, from_y)
+        for tar in traceList:
+            self.moveToAdjacentCell(cur, tar, mainProg)
+            cur = tar
+        return True # valid
     def agentClear(self, mainProg):
-        ax, ay = self.agentInfo.getPosition()
-        percept = mainProg.map[ax][ay].percept
-        status = self.kb.infer(ax, ay)
-        self.safeList.remove((ax, ay))
-        self.agentMap[ax][ay] = 0
-        if status[Environment.POISON] == Status.EXIST:
-            self.agentMap[ax][ay] = 1
-        self.kb.update(mainProg.map[ax][ay].percept, ax, ay)
-        # Grab gold
-        while status[Environment.GOLD] == Status.EXIST:
-            valid, newProperties = mainProg.agentDo(Action.GRAB)
-            if not valid:
-                break
-            # Record action
-            self.agentInfo = newProperties
-        # Grab heal
-        while status[Environment.HEAL] == Status.EXIST:
-            valid, newProperties = mainProg.agentDo(Action.GRAB)
-            if not valid:
-                break
-            # Record action
-            self.agentInfo = newProperties
-        # Kill all WUMPUS adjacent to agent
-        if percept & Percept.STENCH:
-            for k in range(4):
-                susCellX, susCellY = getAdjCell(ax, ay, self.agentInfo.getDirection())
-                if not self.inBound(susCellX, susCellY):
-                    continue
-                if not (self.kb.visited[susCellX][susCellY] and self.kb.noWumpus(susCellX, susCellY)):
-                    while True:
-                        valid, newProperties = mainProg.agentDo(Action.SHOOT)
-                        self.agentInfo = newProperties
-                        # Record action
-                        if not valid: # wumpus scream
-                            break
-                if k == 3:
+        while True:
+            ax, ay = self.agentInfo.getPosition()
+            percept = mainProg.map[ax][ay].percept
+            status = self.kb.infer(ax, ay)
+            self.safeList.remove((ax, ay))
+            self.agentMap[ax][ay] = 0
+            if status[Environment.POISON] == Status.EXIST:
+                self.agentMap[ax][ay] = 1
+            self.kb.update(mainProg.map[ax][ay].percept, ax, ay)
+            # Grab gold
+            while status[Environment.GOLD] == Status.EXIST:
+                valid, newProperties = mainProg.agentDo(Action.GRAB)
+                if not valid:
                     break
-                valid, newProperties = mainProg.agentDo(Action.TURN_RIGHT)
+                self.addAction(Action.GRAB)
                 self.agentInfo = newProperties
-                # Record action
-            mainProg.updatePerceptInPos(ax, ay)
-        # Move to adjacent
-        safe = False
-        for i, j in [(self.ax + 1, self.ay), (self.ax, self.ay + 1), (self.ax - 1, self.ay), (self.ax, self.ay - 1)]:
-            if not self.inBound(i, j):
-                continue
-            status = self.kb.infer(i, j)
-            if self.isSafe(status):
-                safe = True
-                if not self.kb.isVisited(i, j):
-                    self.safeList.append((i, j))
+            # Grab heal
+            while status[Environment.HEAL] == Status.EXIST:
+                valid, newProperties = mainProg.agentDo(Action.GRAB)
+                if not valid:
+                    break
+                self.addAction(Action.GRAB)
+                self.agentInfo = newProperties
+            # Kill all WUMPUS adjacent to agent
+            if percept & Percept.STENCH:
+                for k in range(4):
+                    susCellX, susCellY = getAdjCell(ax, ay, self.agentInfo.getDirection())
+                    if not self.inBound(susCellX, susCellY):
+                        continue
+                    if not (self.kb.visited[susCellX][susCellY] and self.kb.noWumpus(susCellX, susCellY)):
+                        while True:
+                            valid, newProperties = mainProg.agentDo(Action.SHOOT)
+                            self.addAction(Action.SHOOT)
+                            self.agentInfo = newProperties
+                            if not valid: # wumpus scream
+                                break
+                    if k == 3:
+                        break
+                    valid, newProperties = mainProg.agentDo(Action.TURN_RIGHT)
+                    self.addAction(Action.TURN_RIGHT)
+                    self.agentInfo = newProperties
+                mainProg.updatePerceptInPos(ax, ay)
+            # Move to adjacent
+            safe = False
+            for i, j in [(self.ax + 1, self.ay), (self.ax, self.ay + 1), (self.ax - 1, self.ay), (self.ax, self.ay - 1)]:
+                if not self.inBound(i, j):
+                    continue
+                status = self.kb.infer(i, j)
+                if self.isSafe(status):
+                    safe = True
+                    if not self.kb.isVisited(i, j):
+                        self.safeList.append((i, j))
+            if safe == False:
+                self.moveToCell((ax, ay), (9, 0), mainProg)
+                break

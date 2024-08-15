@@ -39,12 +39,6 @@ class Direction(Enum):
     LEFT = 2
     RIGHT = 3
 
-class AgentMap(Enum):
-    SAFE = auto()
-    UNSAFE = auto()
-    DOABLE = auto()
-    UNKNOWN = auto()
-
 ASSET_PATH = "assets/"
 def getObjectsEnumArray(cellStr):
         cell_objects = []
@@ -100,10 +94,64 @@ def turnLeft(direction):
     
 def getAdjCell(x, y, dir):
     if dir == Direction.UP:
-        return x + 1, y
-    if dir == Direction.DOWN:
         return x - 1, y
+    if dir == Direction.DOWN:
+        return x + 1, y
     if dir == Direction.LEFT:
         return x, y - 1
     if dir == Direction.RIGHT:
         return x, y + 1
+    
+def getDirBetweenCells(x, y, u, v):
+    ##### D  R  U   L
+    dx = [1, 0, -1, 0]
+    dy = [0, 1, 0, -1]
+    for k in range(4):
+        new_x = dx + x[k]
+        new_y = dy + y[k]
+        if new_x == u and new_y == v:
+            if k == 0:
+                return Direction.DOWN
+            elif k == 1:
+                return Direction.RIGHT
+            elif k == 2:
+                return Direction.UP
+            elif k == 3:
+                return Direction.LEFT
+    return -1
+
+def getRotationOrder(initialDir, targetDir):
+    res = []
+    if initialDir == targetDir:
+        return res
+    def rotateRight(initialDir, targetDir):
+        tmp = []
+        while initialDir != targetDir:
+            if initialDir == Direction.UP:
+                initialDir = Direction.RIGHT
+            elif initialDir == Direction.RIGHT:
+                initialDir = Direction.DOWN
+            elif initialDir == Direction.DOWN:
+                initialDir = Direction.LEFT
+            elif initialDir == Direction.LEFT:
+                initialDir = Direction.UP
+            tmp.append(Direction.RIGHT)
+        return tmp
+    def rotateLeft(initialDir, targetDir):
+        tmp = []
+        while initialDir != targetDir:
+            if initialDir == Direction.UP:
+                initialDir = Direction.LEFT
+            elif initialDir == Direction.LEFT:
+                initialDir = Direction.DOWN
+            elif initialDir == Direction.DOWN:
+                initialDir = Direction.RIGHT
+            elif initialDir == Direction.RIGHT:
+                initialDir = Direction.UP
+            tmp.append(Direction.LEFT)
+        return tmp
+    listR = rotateRight(initialDir, targetDir)
+    listL = rotateLeft(initialDir, targetDir)
+    if len(listR) < len(listL):
+        return listR
+    return listL
