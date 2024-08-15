@@ -14,6 +14,12 @@ class Program:
         self.height = height
         self.Gui = Gui(self)
         self.canvas = self.Gui.getCanvas()
+        self.dict = {
+            Environment.WUMPUS: Percept.STENCH,
+            Environment.PIT: Percept.BREEZE,
+            Environment.POISON: Percept.WHIFF,
+            Environment.HEAL: Percept.GLOW
+        }
         self.loadObjectsImage()
         self.load(filename)
         # self.agent = Agent(width, height)
@@ -68,29 +74,36 @@ class Program:
                 for x, y in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                     if i + x >= 0 and i + x < self.height and j + y >= 0 and j + y < self.width:
                         obj = self.map[i + x][j + y].getObjects()
-                        if obj[Environment.WUMPUS] > 0:
-                            percept |= Percept.STENCH
-                        if obj[Environment.PIT] > 0:
-                            percept |= Percept.BREEZE
-                        if obj[Environment.POISON] > 0:
-                            percept |= Percept.WHIFF
-                        if obj[Environment.HEAL] > 0:
-                            percept |= Percept.GLOW
+                        for x in self.dict.keys():
+                            if obj[x] > 0:
+                                percept |= self.dict[x]
+                        # if obj[Environment.WUMPUS] > 0:
+                        #     percept |= Percept.STENCH
+                        # if obj[Environment.PIT] > 0:
+                        #     percept |= Percept.BREEZE
+                        # if obj[Environment.POISON] > 0:
+                        #     percept |= Percept.WHIFF
+                        # if obj[Environment.HEAL] > 0:
+                        #     percept |= Percept.GLOW
                 self.map[i][j].updatePercept(percept)
 
     def updatePerceptInPos(self, i, j):
         for x, y in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
             if i + x >= 0 and i + x < self.height and j + y >= 0 and j + y < self.width:
                 obj = self.map[i + x][j + y].getObjects()
-                if obj[Environment.WUMPUS] > 0:
-                    percept |= Percept.STENCH
-                if obj[Environment.PIT] > 0:
-                    percept |= Percept.BREEZE
-                if obj[Environment.POISON] > 0:
-                    percept |= Percept.WHIFF
-                if obj[Environment.HEAL] > 0:
-                    percept |= Percept.GLOW
+                # if obj[Environment.WUMPUS] > 0:
+                #     percept |= Percept.STENCH
+                # if obj[Environment.PIT] > 0:
+                #     percept |= Percept.BREEZE
+                # if obj[Environment.POISON] > 0:
+                #     percept |= Percept.WHIFF
+                # if obj[Environment.HEAL] > 0:
+                #     percept |= Percept.GLOW
+                for x in self.dict.keys():
+                    if obj[x] > 0:
+                        percept |= self.dict
         self.map[i][j].updatePercept(percept)
+        
     def agentDo(self, action):
         if action == Action.FORWARD:
             x, y = self.agentInfo.getPosition()
@@ -170,9 +183,6 @@ class Program:
                 return True, self.agentInfo
             return False, self.agentInfo
     
-        
-    
-
     # MAP ON GUI
     def drawMap(self):
         self.canvas.delete("all")
@@ -191,9 +201,6 @@ class Program:
                     self.drawCellContent(x1, y1, cellContent)
         self.drawAgent()      
         
-
-        
-
     def drawAgent(self):
         x, y = self.agentInfo.getPosition()
         print(x, y)
@@ -222,6 +229,7 @@ class Program:
     def showMessageOnGui(self, action):
         agentPos = self.agentInfo.getPosition()
         message = ""
+        content = []
         message += "Action: "
         if action == Action.FORWARD:
             message += "Moved forward"
@@ -244,16 +252,17 @@ class Program:
         message += "Pecrepts: "
         percept = self.map[agentPos[0]][agentPos[1]].getPercept()
         if percept & Percept.STENCH:
-            message += "Stench, "
+            content.append("Stench")
         if percept & Percept.BREEZE:
-            message += "Breeze, "
+            content.append("Breeze")
         if percept & Percept.SCREAM:
-            message += "Scream, "
+            content.append("Scream")
         if percept & Percept.WHIFF:
-            message += "Whiff, "
+            content.append("Whiff")
         if percept & Percept.GLOW:
-            message += "Glow, "
+            content.append("Glow")
         point = self.agentInfo.getPoint()
+        message += ", ".join(content)
         message += "\n"
         message += "Score: " + str(point)
         message += "\n\n"
