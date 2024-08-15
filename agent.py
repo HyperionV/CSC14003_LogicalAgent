@@ -12,7 +12,7 @@ class AgentProperties:
         self.inventory = inventory
         
     def __init__(self):
-        self.position = (0, 0)
+        self.position = (9, 0)
         self.direction = Direction.DOWN
         self.health = 100
         self.point = 0
@@ -183,7 +183,7 @@ class KB:
 
 class Agent:
     # Hoang ganh
-    def __init__(self, width, height, mainProg):
+    def __init__(self, width, height):
         self.kb = KB(width, height)
         self.width, self.height = width, height
         self.agentInfo = AgentProperties()

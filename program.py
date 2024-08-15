@@ -24,6 +24,12 @@ class Program:
         self.load(filename)
         self.agent = Agent(width, height)
 
+
+    def runAgent(self):
+        actionList = self.agent.agentClear(self)
+        # for action in actionList:
+        #     self.agentDo(action)
+
     
     def run(self):
         self.Gui.run()
