@@ -106,6 +106,7 @@ class Program:
         
         elif action == Action.GRAB:
             x, y = self.agentInfo.getPosition()
+            self.showMessageOnGui(action)
             if self.map[x][y].hasObject(Environment.GOLD):
                 self.map[x][y].removeObject(Environment.GOLD)
                 self.agentInfo.adjustInventory(ItemType.GOLD, 1)
@@ -113,7 +114,6 @@ class Program:
             elif self.map[x][y].hasObject(Environment.HEAL):
                 self.map[x][y].removeObject(Environment.HEAL)
                 self.agentInfo.adjustInventory(ItemType.HEAL, 1)
-                self.showMessageOnGui(action)
                 return True, self.agentInfo
             else:
                 return False, self.agentInfo
@@ -130,10 +130,10 @@ class Program:
             elif self.agentInfo.getDirection() == Direction.RIGHT:
                 nextY += 1
             if nextX >= 0 and nextX < self.height and nextY >= 0 and nextY < self.width:
+                self.animateShoot(nextX, nextY)
+                self.showMessageOnGui(action)
                 if self.map[nextX][nextY].hasObject(Environment.WUMPUS):
                     self.map[nextX][nextY].removeObject(Environment.WUMPUS)
-                    self.animateShoot(nextX, nextY)
-                    self.showMessageOnGui(self, action)
                     return True, self.agentInfo
             return False, self.agentInfo
 
@@ -153,6 +153,7 @@ class Program:
                 self.showMessageOnGui(self, action)
                 return True, self.agentInfo
             return False, self.agentInfo
+    
         
     
 
@@ -173,6 +174,7 @@ class Program:
                     self.canvas.create_rectangle(x1, y1, x2, y2, fill="white" if not adjacent else "light yellow", outline="black")
                     self.drawCellContent(x1, y1, cellContent)
         self.drawAgent()      
+        
 
         
 
@@ -220,7 +222,7 @@ class Program:
         elif action == Action.HEAL:
             message += "Healed"
         message += "\n"
-        message += "Position: "
+        message += "Current position: "
         message +=  str(self.convertMapPosition(agentPos[0], agentPos[1]))
         message += '\n'
         message += "Pecrepts: "
@@ -240,6 +242,8 @@ class Program:
         message += "Score: " + str(point)
         message += "\n\n"
         self.Gui.showMessage(message)
+        if(action != Action.SHOOT):
+            self.reloadMap()
 
 
     def animateShoot(self, nextX, nextY):
@@ -264,6 +268,7 @@ class Program:
                 self.canvas.after(delay, moveArrow, step + 1)
             else:
                 self.canvas.delete(arrowId)
+                self.reloadMap()
 
         moveArrow(0)
     

@@ -2,6 +2,7 @@ from pathlib import Path
 from tkinter import *
 from tkinter import scrolledtext
 from tkinter import ttk
+from Utils import Action
 import pyglet
 
 
@@ -53,9 +54,11 @@ class Gui:
             self.forwardButtonClicked()
 
     def pauseresume_button_clicked(self):
+        self.program.agentDo(Action.SHOOT)
         pass    
         
     def forwardButtonClicked(self):
+        self.program.agentDo(Action.FORWARD)
         pass
         
     def resetButtonClicked(self):
