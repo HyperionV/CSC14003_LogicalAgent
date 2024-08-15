@@ -55,10 +55,11 @@ class Gui:
 
     def pauseresume_button_clicked(self):
         self.program.runAgent()
+        # self.program.agentDoWithUi(Action.SHOOT)
         pass    
         
     def forwardButtonClicked(self):
-        self.program.agentDo(Action.FORWARD)
+        self.program.agentDoWithUi(Action.FORWARD)
         pass
         
     def resetButtonClicked(self):

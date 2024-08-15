@@ -1,4 +1,4 @@
-from enum import Enum, Flag, auto
+from enum import Enum, Flag, auto, IntEnum
 class Action(Enum):
     FORWARD = auto()
     TURN_RIGHT = auto()
@@ -13,13 +13,13 @@ class ItemType(Enum):
     GOLD = auto()
     ARROW = auto()
 
-class Environment(Enum):
-    WUMPUS = auto()
-    PIT = auto()
-    POISON = auto()
-    GOLD = auto()
-    HEAL = auto()
-    AGENT = auto()
+class Environment(IntEnum):
+    WUMPUS = 0
+    PIT = 1
+    POISON = 2
+    GOLD = 3
+    HEAL = 4
+    AGENT = 5
     
 class Percept(Flag):
     STENCH = auto()

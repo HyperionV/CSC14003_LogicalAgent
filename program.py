@@ -9,6 +9,7 @@ import tkinter as tk
 class Program:
     def __init__(self, width, height, filename):
         self.objectImage = {}
+        self.filename = filename
         self.cellSize = 90
         self.width = width
         self.height = height
@@ -22,20 +23,22 @@ class Program:
         }
         self.loadObjectsImage()
         self.load(filename)
-        self.agent = Agent(width, height)
-
 
     def runAgent(self):
         actionList = self.agent.agentClear(self)
-        # for action in actionList:
-        #     self.agentDo(action)
+        self.load(self.filename)
+        for action in actionList:
+            self.agentDoWithUi(action)
+            
 
-    
+
     def run(self):
         self.Gui.run()
         
     
     def load(self, filename):
+        self.agent = Agent(self.width, self.height)
+        self.filename = filename
         self.map = [[Cell() for _ in range(self.width)] for _ in range(self.height)]
         self.agentInfo = AgentProperties()
         self.readMap(filename)
@@ -111,6 +114,7 @@ class Program:
         self.map[i][j].updatePercept(percept)
         
     def agentDo(self, action):
+        isSuccessful = False
         if action == Action.FORWARD:
             x, y = self.agentInfo.getPosition()
             if self.agentInfo.getDirection() == Direction.UP:
@@ -123,35 +127,28 @@ class Program:
                 y += 1
             if x >= 0 and x < self.height and y >= 0 and y < self.width:
                 self.agentInfo.setPosition((x, y))
-                self.showMessageOnGui(action)
-                return True, self.agentInfo
-            return False, self.agentInfo
+                isSuccessful = True
             
         elif action == Action.TURN_RIGHT:
             direction = turnRight(self.agentInfo.getDirection())
             self.agentInfo.setDirection(direction)
-            self.showMessageOnGui(action)
-            return True, self.agentInfo
+            isSuccessful = True
         
         elif action == Action.TURN_LEFT:
             direction = turnLeft(self.agentInfo.getDirection())
             self.agentInfo.setDirection(direction)
-            self.showMessageOnGui(action)
-            return True, self.agentInfo
+            isSuccessful = True
         
         elif action == Action.GRAB:
             x, y = self.agentInfo.getPosition()
-            self.showMessageOnGui(action)
             if self.map[x][y].hasObject(Environment.GOLD):
                 self.map[x][y].removeObject(Environment.GOLD)
                 self.agentInfo.adjustInventory(ItemType.GOLD, 1)
-                return True, self.agentInfo
+                isSuccessful = True
             elif self.map[x][y].hasObject(Environment.HEAL):
                 self.map[x][y].removeObject(Environment.HEAL)
                 self.agentInfo.adjustInventory(ItemType.HEAL, 1)
-                return True, self.agentInfo
-            else:
-                return False, self.agentInfo
+                isSuccessful = True
             
         elif action == Action.SHOOT:
             x, y = self.agentInfo.getPosition()
@@ -165,19 +162,14 @@ class Program:
             elif self.agentInfo.getDirection() == Direction.RIGHT:
                 nextY += 1
             if nextX >= 0 and nextX < self.height and nextY >= 0 and nextY < self.width:
-                self.animateShoot(nextX, nextY)
-                self.showMessageOnGui(action)
                 if self.map[nextX][nextY].hasObject(Environment.WUMPUS):
                     self.map[nextX][nextY].removeObject(Environment.WUMPUS)
-                    return True, self.agentInfo
-            return False, self.agentInfo
+                    isSuccessful = True
 
         elif action == Action.CLIMB:
             x, y = self.agentInfo.getPosition()
             if x == 0 and y == 0:
-                self.showMessageOnGui(self, action)
-                return True, self.agentInfo
-            return False, self.agentInfo
+                isSuccessful = True
         
         elif action == Action.HEAL:
             if self.agentInfo.inventory[ItemType.HEAL] > 0:
@@ -185,9 +177,82 @@ class Program:
                 health = min(health + 25, 100)
                 self.agentInfo.setHealth(health)
                 self.agentInfo.adjustInventory(ItemType.HEAL, -1)
-                self.showMessageOnGui(self, action)
-                return True, self.agentInfo
-            return False, self.agentInfo
+                isSuccessful = True
+        return isSuccessful
+        
+    def agentDoWithUi(self, action):
+        isSuccessful = False
+        if action == Action.FORWARD:
+            x, y = self.agentInfo.getPosition()
+            if self.agentInfo.getDirection() == Direction.UP:
+                x -= 1
+            elif self.agentInfo.getDirection() == Direction.DOWN:
+                x += 1
+            elif self.agentInfo.getDirection() == Direction.LEFT:
+                y -= 1
+            elif self.agentInfo.getDirection() == Direction.RIGHT:
+                y += 1
+            if x >= 0 and x < self.height and y >= 0 and y < self.width:
+                self.agentInfo.setPosition((x, y))
+                isSuccessful = True
+
+            
+        elif action == Action.TURN_RIGHT:
+            direction = turnRight(self.agentInfo.getDirection())
+            self.agentInfo.setDirection(direction)
+            isSuccessful = True
+        
+        elif action == Action.TURN_LEFT:
+            direction = turnLeft(self.agentInfo.getDirection())
+            self.agentInfo.setDirection(direction)
+            isSuccessful = True
+        
+        elif action == Action.GRAB:
+            x, y = self.agentInfo.getPosition()
+            if self.map[x][y].hasObject(Environment.GOLD):
+                self.map[x][y].removeObject(Environment.GOLD)
+                self.agentInfo.adjustInventory(ItemType.GOLD, 1)
+                isSuccessful = True
+            elif self.map[x][y].hasObject(Environment.HEAL):
+                self.map[x][y].removeObject(Environment.HEAL)
+                self.agentInfo.adjustInventory(ItemType.HEAL, 1)
+                isSuccessful = True
+        
+            
+        elif action == Action.SHOOT:
+            x, y = self.agentInfo.getPosition()
+            nextX, nextY = x, y
+            if self.agentInfo.getDirection() == Direction.UP:
+                nextX -= 1
+            elif self.agentInfo.getDirection() == Direction.DOWN:
+                nextX += 1
+            elif self.agentInfo.getDirection() == Direction.LEFT:
+                nextY -= 1
+            elif self.agentInfo.getDirection() == Direction.RIGHT:
+                nextY += 1
+            if nextX >= 0 and nextX < self.height and nextY >= 0 and nextY < self.width:
+                if self.map[nextX][nextY].hasObject(Environment.WUMPUS):
+                    self.map[nextX][nextY].removeObject(Environment.WUMPUS)
+                    isSuccessful = True
+                self.animateShoot(nextX, nextY)
+                    
+            
+        elif action == Action.CLIMB:
+            x, y = self.agentInfo.getPosition()
+            if x == 0 and y == 0:
+                isSuccessful = True
+            
+        
+        elif action == Action.HEAL:
+            if self.agentInfo.inventory[ItemType.HEAL] > 0:
+                health = self.agentInfo.getHealth()
+                health = min(health + 25, 100)
+                self.agentInfo.setHealth(health)
+                self.agentInfo.adjustInventory(ItemType.HEAL, -1)
+                isSuccessful = True
+            
+        self.showMessageOnGui(action, isSuccessful)
+        return isSuccessful, self.agentInfo
     
     # MAP ON GUI
     def drawMap(self):
@@ -232,7 +297,7 @@ class Program:
         mapPos = self.height - x,  y + 1
         return mapPos         # (1, 1) (1, 2) ... (10, 10) (BL -> TR)
 
-    def showMessageOnGui(self, action):
+    def showMessageOnGui(self, action, shootSuccess = None):
         agentPos = self.agentInfo.getPosition()
         message = ""
         content = []
@@ -267,6 +332,8 @@ class Program:
             content.append("Whiff")
         if percept & Percept.GLOW:
             content.append("Glow")
+        if shootSuccess:
+            content.append("Scream")
         point = self.agentInfo.getPoint()
         message += ", ".join(content)
         message += "\n"

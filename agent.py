@@ -11,7 +11,7 @@ class AgentProperties:
         self.inventory = inventory
         
     def __init__(self):
-        self.position = (9, 0)
+        self.position = (0, 0)
         self.direction = Direction.DOWN
         self.health = 100
         self.point = 0
@@ -54,19 +54,24 @@ class KB:
     def __init__(self, height, width):
         self.height = height
         self.width = width
-        self.mapStatus = [{
-            Environment.WUMPUS: Status.UNKNOWN,
-            Environment.PIT: Status.UNKNOWN,
-            Environment.POISON: Status.UNKNOWN,
-            Environment.GOLD: Status.UNKNOWN,
-            Environment.HEAL: Status.UNKNOWN
-        } for _ in range(self.height) for _ in range(self.width)]
-        self.percept = [Percept(0) for _ in range(self.height) for _ in range(self.width)]
+        self.mapStatus = dict()
+        for i in range(self.height):
+            for j in range(self.width):
+                self.mapStatus[(i, j)] = {
+                    Environment.WUMPUS: Status.UNKNOWN,
+                    Environment.PIT: Status.UNKNOWN,
+                    Environment.POISON: Status.UNKNOWN,
+                    Environment.HEAL: Status.UNKNOWN
+                }
+        self.percept = dict()
+        for i in range(self.height):
+            for j in range(self.width):
+                self.percept[(i, j)] = Percept(0)
         self.visited = [[False for _ in range(self.width)] for _ in range(self.height)]
         self.solver = Glucose3()
 
     def update(self, percept, x, y):
-        self.percept[x][y] = percept
+        self.percept[(x, y)] = percept
         self.visited[x][y] = True
         # if not (percept & Percept.STENCH):
         #     self.mapStatus[x][y][Environment.WUMPUS] = Status.NONE
@@ -86,9 +91,10 @@ class KB:
     def infer(self, x, y):
         # Infer the status of the objects in the cell (x, y)
         def literalToInt(x, y, obj):
-            return (x * self.width + y) * len(Environment) + obj
+            return (x * self.width + y) * len(Environment) + obj + 1
         
         def intToLiteral(literal):
+            literal -= 1
             obj = literal % len(Environment)
             literal //= len(Environment)
             y = literal % self.width
@@ -97,7 +103,7 @@ class KB:
             return (x, y, obj)
         
         def addClause(x, y):
-            if self.percept[x][y] & Percept.STENCH:
+            if self.percept[(x, y)] & Percept.STENCH:
                 clause = []
                 # If there is a stench in the cell, there is a wumpus in one of the adjacent cells
                 for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
@@ -110,7 +116,7 @@ class KB:
                     if i * j == 0 and x + i >= 0 and x + i < self.height and y + j >= 0 and y + j < self.width:
                         self.solver.add_clause([-literalToInt(x + i, y + j, Environment.WUMPUS)])
 
-            if self.percept[x][y] & Percept.BREEZE:
+            if self.percept[(x, y)] & Percept.BREEZE:
                 clause = []
                 # If there is a breeze in the cell, there is a pit in one of the adjacent cells
                 for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
@@ -123,7 +129,7 @@ class KB:
                     if i * j == 0 and x + i >= 0 and x + i < self.height and y + j >= 0 and y + j < self.width:
                         self.solver.add_clause([-literalToInt(x + i, y + j, Environment.PIT)])
 
-            if self.percept[x][y] & Percept.WHIFF:
+            if self.percept[(x, y)] & Percept.WHIFF:
                 clause = []
                 # If there is a whiff in the cell, there is a poison in one of the adjacent cells
                 for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
@@ -136,7 +142,7 @@ class KB:
                     if i * j == 0 and x + i >= 0 and x + i < self.height and y + j >= 0 and y + j < self.width:
                         self.solver.add_clause([-literalToInt(x + i, y + j, Environment.POISON)])
 
-            if self.percept[x][y] & Percept.GLOW:
+            if self.percept[(x, y)] & Percept.GLOW:
                 clause = []
                 # If there is a glow in the cell, there is a heal potion in the adjacent cells
                 for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
@@ -166,32 +172,30 @@ class KB:
             else:
                 return Status.NONE
             
-        self.mapStatus[x][y][Environment.WUMPUS] = getStatus(x, y, Environment.WUMPUS)
-        self.mapStatus[x][y][Environment.PIT] = getStatus(x, y, Environment.PIT)
-        self.mapStatus[x][y][Environment.POISON] = getStatus(x, y, Environment.POISON)
-        self.mapStatus[x][y][Environment.GOLD] = getStatus(x, y, Environment.GOLD)
-        self.mapStatus[x][y][Environment.HEAL] = getStatus(x, y, Environment.HEAL)
+        self.mapStatus[(x, y)][Environment.WUMPUS] = getStatus(x, y, Environment.WUMPUS)
+        self.mapStatus[(x, y)][Environment.PIT] = getStatus(x, y, Environment.PIT)
+        self.mapStatus[(x, y)][Environment.POISON] = getStatus(x, y, Environment.POISON)
+        self.mapStatus[(x, y)][Environment.HEAL] = getStatus(x, y, Environment.HEAL)
 
-        return self.mapStatus[x][y]
+        return self.mapStatus[(x, y)]
     
 # Environment.WUMPUS: Status.UNKNOWN,
 # Environment.PIT: Status.UNKNOWN,
 # Environment.POISON: Status.UNKNOWN,
 # Environment.GOLD: Status.UNKNOWN,
 # Environment.HEAL: Status.UNKNOWN
-
 class Agent:
     # Hoang ganh
     def __init__(self, width, height):
         self.kb = KB(width, height)
         self.width, self.height = width, height
         self.agentInfo = AgentProperties()
+        self.agentInfo.setPosition((9, 0))
         self.agentMap = [[1e9 for y in range(height + 5)] for x in range(width + 5)]
-        # self.kb.update(mainProg.map[1][1].percept, 1, 1)
         self.safeList = []
         self.poisonList = []
         self.actionList = []
-        self.safeList.append((1, 1))
+        self.safeList.append((9, 0))
     def addAction(self, action):
         self.actionList.append(action)
     def findPath(self, x, y, u, v):
@@ -204,7 +208,7 @@ class Agent:
         dy = [0, 1, 0, -1]
         dq.append((x, y))
         while len(dq) > 0:
-            cur = dq.popLeft()
+            cur = dq.popleft()
             vis[cur[0]][cur[1]] = 1
             for k in range(4):
                 row = cur[0] + dx[k]
@@ -265,7 +269,9 @@ class Agent:
             exit(0)
         self.addAction(Action.FORWARD)
         self.agentInfo = info
-    def moveToCell(self, from_x, from_y, to_x, to_y, mainProg):
+    def moveToCell(self, fromCell, toCell, mainProg):
+        from_x, from_y = fromCell
+        to_x, to_y = toCell
         res = self.findPath(from_x, from_y, to_x, to_y)
         if res == -1:
             return False # invalid
@@ -277,19 +283,21 @@ class Agent:
         return True # valid
     def agentClear(self, mainProg):
         while True:
+            print('ax, ay:', ax, ay)
+            print('all safe pos:', self.safeList)
             ax, ay = self.agentInfo.getPosition()
             percept = mainProg.map[ax][ay].percept
             status = self.kb.infer(ax, ay)
-            self.safeList.remove((ax, ay))
+            self.safeList.remove((ax, ay)) 
             self.agentMap[ax][ay] = 0
             if status[Environment.POISON] == Status.EXIST:
                 self.agentMap[ax][ay] = 1
             self.kb.update(mainProg.map[ax][ay].percept, ax, ay)
             # Grab gold
-            while status[Environment.GOLD] == Status.EXIST:
+            while mainProg.map[ax][ay].hasObject(Environment.GOLD):
                 valid, newProperties = mainProg.agentDo(Action.GRAB)
                 if not valid:
-                    break
+                    break 
                 self.addAction(Action.GRAB)
                 self.agentInfo = newProperties
             # Grab heal
@@ -318,9 +326,11 @@ class Agent:
                     self.addAction(Action.TURN_RIGHT)
                     self.agentInfo = newProperties
                 mainProg.updatePerceptInPos(ax, ay)
+                self.kb.update(percept, ax, ay)
             # Move to adjacent
             safe = False
-            for i, j in [(self.ax + 1, self.ay), (self.ax, self.ay + 1), (self.ax - 1, self.ay), (self.ax, self.ay - 1)]:
+            nextPos = -1
+            for i, j in [(ax + 1, ay), (ax, ay + 1), (ax - 1, ay), (ax, ay - 1)]:
                 if not self.inBound(i, j):
                     continue
                 status = self.kb.infer(i, j)
@@ -328,7 +338,11 @@ class Agent:
                     safe = True
                     if not self.kb.isVisited(i, j):
                         self.safeList.append((i, j))
+                        nextPos = (i, j)
             if safe == False:
                 self.moveToCell((ax, ay), (9, 0), mainProg)
                 break
+            else:
+                print('next pos:', nextPos[0], nextPos[1])
+                self.moveToCell((ax, ay), nextPos, mainProg)
         return self.actionList
