@@ -178,7 +178,7 @@ class Program:
                 self.agentInfo.setHealth(health)
                 self.agentInfo.adjustInventory(ItemType.HEAL, -1)
                 isSuccessful = True
-        return isSuccessful
+        return isSuccessful, self.agentInfo
         
     def agentDoWithUi(self, action):
         isSuccessful = False
@@ -252,8 +252,7 @@ class Program:
                 isSuccessful = True
             
         self.showMessageOnGui(action, isSuccessful)
-        return isSuccessful, self.agentInfo
-    
+        return isSuccessful
     # MAP ON GUI
     def drawMap(self):
         self.canvas.delete("all")
