@@ -21,7 +21,6 @@ class Environment(Enum):
     HEAL = auto()
     AGENT = auto()
     
-
 class Percept(Flag):
     STENCH = auto()
     BREEZE = auto()
@@ -29,7 +28,6 @@ class Percept(Flag):
     WHIFF = auto()
     GLOW = auto()
     
-
 class Status(Enum):
     NONE = auto()
     EXIST = auto()
@@ -40,6 +38,12 @@ class Direction(Enum):
     DOWN = 1
     LEFT = 2
     RIGHT = 3
+
+class AgentMap(Enum):
+    SAFE = auto()
+    UNSAFE = auto()
+    DOABLE = auto()
+    UNKNOWN = auto()
 
 ASSET_PATH = "assets/"
 def getObjectsEnumArray(cellStr):
@@ -93,3 +97,13 @@ def turnLeft(direction):
         return Direction.RIGHT
     elif direction == Direction.RIGHT:
         return Direction.UP
+    
+def getAdjCell(x, y, dir):
+    if dir == Direction.UP:
+        return x + 1, y
+    if dir == Direction.DOWN:
+        return x - 1, y
+    if dir == Direction.LEFT:
+        return x, y - 1
+    if dir == Direction.RIGHT:
+        return x, y + 1
