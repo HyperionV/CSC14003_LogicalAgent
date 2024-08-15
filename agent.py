@@ -332,3 +332,4 @@ class Agent:
             if safe == False:
                 self.moveToCell((ax, ay), (9, 0), mainProg)
                 break
+        return self.actionList
