@@ -301,7 +301,7 @@ class Agent:
         maxHealth = self.agentInfo.getMaxHealth()
         if poison * 25 >= maxHealth:
             return False
-        while self.agentInfo.getHealth() <= poison * 25:
+        while self.agentInfo.getHealth() <= poison * 25 and self.agentInfo.getHealth() < 100:
             valid, info = mainProg.agentDo(Action.HEAL)
             if not valid:
                 print('no heal available (how)')
@@ -315,14 +315,22 @@ class Agent:
         return True # valid
     def agentClear(self, mainProg):
         while True:
+            if self.agentInfo.getHealth() <= 0:
+                # print('chet me m roi')
+                break
             ax, ay = self.agentInfo.getPosition()
-            # print('ax, ay:', ax, ay)
+            # print('\nax, ay:', ax, ay, self.agentInfo.getHealth())
             # print('safeList:', self.safeList)
+            # print('poisonList:', self.poisonList)
             percept = mainProg.map[ax][ay].percept
             status = self.kb.infer(ax, ay)
-            if self.vis[ax][ay] == 0 and mainProg.map[ax][ay].hasObject(Environment.POISON):
+            mapObject = mainProg.getObject(ax, ay)
+            # print('status:', status)
+            if self.vis[ax][ay] == 0 and not status[Environment.POISON] == Status.NONE and (ax, ay) in self.poisonList:
                 self.poisonList.remove((ax, ay))
                 self.agentMap[ax][ay] = 1
+                if mapObject[Environment.POISON] == Status.EXIST:
+                    self.agentInfo.setHealth(self.agentInfo.getHealth() - 25)
             elif self.vis[ax][ay] == 0:
                 self.safeList.remove((ax, ay)) 
                 self.agentMap[ax][ay] = 0
@@ -412,6 +420,6 @@ class Agent:
                 #     print('next pos:', nextPos[0], nextPos[1])
                 self.moveToCell((ax, ay), nextPos, mainProg)
                 self.agentInfo.setPosition(nextPos)
-        for action in self.actionList:
-            print(action)
+        # for action in self.actionList:
+        #     print(action)
         return self.actionList
