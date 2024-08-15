@@ -33,6 +33,8 @@ class Program:
 
 
     def run(self):
+        self.runAgent()
+        self.agent = Agent(self.width, self.height)
         self.Gui.run()
         
     
@@ -97,6 +99,7 @@ class Program:
                 self.map[i][j].updatePercept(percept)
 
     def updatePerceptInPos(self, i, j):
+        percept = Percept(0)
         for x, y in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
             if i + x >= 0 and i + x < self.height and j + y >= 0 and j + y < self.width:
                 obj = self.map[i + x][j + y].getObjects()
@@ -110,8 +113,14 @@ class Program:
                 #     percept |= Percept.GLOW
                 for x in self.dict.keys():
                     if obj[x] > 0:
-                        percept |= self.dict
+                        percept |= self.dict[x]
         self.map[i][j].updatePercept(percept)
+    
+    def getPercept(self, i, j):
+        return self.map[i][j].getPercept()
+    
+    def getObject(self, i, j):
+        return self.map[i][j].getObjects()
         
     def agentDo(self, action):
         isSuccessful = False
@@ -273,7 +282,7 @@ class Program:
         
     def drawAgent(self):
         x, y = self.agentInfo.getPosition()
-        print(x, y)
+        # print(x, y)
         direction = self.agentInfo.getDirection()
         x1 = y * self.cellSize
         y1 = x * self.cellSize

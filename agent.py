@@ -190,25 +190,34 @@ class Agent:
         self.kb = KB(width, height)
         self.width, self.height = width, height
         self.agentInfo = AgentProperties()
-        self.agentInfo.setPosition((9, 0))
+        self.agentInfo.setPosition((0, 0))
         self.agentMap = [[1e9 for y in range(height + 5)] for x in range(width + 5)]
+        self.vis = [[0 for y in range(height + 5)] for x in range(width + 5)]
+        self.agentMap[0][0] = 0
         self.safeList = []
         self.poisonList = []
         self.actionList = []
-        self.safeList.append((9, 0))
+        self.safeList.append((0, 0))
     def addAction(self, action):
         self.actionList.append(action)
     def findPath(self, x, y, u, v):
         # BFS j day
+        # if x < 3 and y < 3:
+        #     print('src, tar:', x, y, '   ', u, v)
+        #     for row in self.agentMap:
+        #         print(row)
         dq = deque()
         trace = [[(-1, -1) for y in range(self.height + 5)] for x in range(self.width + 5)]
         dis = [[1e9 for y in range(self.height + 5)] for x in range(self.width + 5)]
         vis = [[0 for y in range(self.height + 5)] for x in range(self.width + 5)]
+        dis[x][y] = 0
         dx = [1, 0, -1, 0]
         dy = [0, 1, 0, -1]
         dq.append((x, y))
         while len(dq) > 0:
             cur = dq.popleft()
+            if vis[cur[0]][cur[1]] != 0:
+                continue
             vis[cur[0]][cur[1]] = 1
             for k in range(4):
                 row = cur[0] + dx[k]
@@ -216,14 +225,15 @@ class Agent:
                 if self.agentMap[row][col] > 1:
                     continue
                 weight = self.agentMap[row][col]
-                if not vis[row][col] and dis[cur[0]][cur[1]] + weight < dis[row][col]:
+                if dis[cur[0]][cur[1]] + weight < dis[row][col]:
                     dis[row][col] = dis[cur[0]][cur[1]] + weight
                     trace[row][col] = cur
                     if weight == 0:
-                        dq.appendLeft((row, col))
+                        dq.appendleft((row, col))
                     else:
                         dq.append((row, col))
         if vis[u][v] == 0:
+            # print('    cant find tar')
             return -1
         row, col = u, v
         traceList = []
@@ -241,7 +251,7 @@ class Agent:
             return True
         return False
     def isSafe(self, status):
-        if not status[Environment.WUMPUS] and not status[Environment.PIT] and not status[Environment.POISON]:
+        if status[Environment.WUMPUS] == Status.NONE and status[Environment.PIT] == Status.NONE and status[Environment.POISON] == Status.NONE:
             return True
         return False
     def isDoable(self, status):
@@ -253,6 +263,7 @@ class Agent:
         to_x, to_y = toCell
         dir = getDirBetweenCells(from_x, from_y, to_x, to_y)
         rotationOrder = getRotationOrder(self.agentInfo.direction, dir)
+        # print('    initial dir:', self.agentInfo.getDirection())
         if len(rotationOrder) > 0:
             for newDir in rotationOrder:
                 if newDir == Direction.RIGHT:
@@ -263,19 +274,23 @@ class Agent:
                     valid, info = mainProg.agentDo(Action.TURN_LEFT)
                     self.agentInfo = info
                     self.addAction(Action.TURN_LEFT)
+        # print('    after:', self.agentInfo.getDirection(), '\n')
         valid, info = mainProg.agentDo(Action.FORWARD)
         if not valid:
-            print('moveToAdjacentCell error')
+            # print('moveToAdjacentCell error')
             exit(0)
         self.addAction(Action.FORWARD)
         self.agentInfo = info
     def moveToCell(self, fromCell, toCell, mainProg):
+        # print('    move to cell')
         from_x, from_y = fromCell
         to_x, to_y = toCell
         res = self.findPath(from_x, from_y, to_x, to_y)
         if res == -1:
+            # print('    invalid tracing')
             return False # invalid
         traceList, poison = res
+        # print('     traceList:', traceList)
         cur = (from_x, from_y)
         for tar in traceList:
             self.moveToAdjacentCell(cur, tar, mainProg)
@@ -283,12 +298,13 @@ class Agent:
         return True # valid
     def agentClear(self, mainProg):
         while True:
-            print('ax, ay:', ax, ay)
-            print('all safe pos:', self.safeList)
             ax, ay = self.agentInfo.getPosition()
+            # print('\nax, ay:', ax, ay, self.agentInfo.getDirection())
             percept = mainProg.map[ax][ay].percept
             status = self.kb.infer(ax, ay)
             self.safeList.remove((ax, ay)) 
+            self.vis[ax][ay] = 1
+            self.agentMap[ax][ay] = 0
             self.agentMap[ax][ay] = 0
             if status[Environment.POISON] == Status.EXIST:
                 self.agentMap[ax][ay] = 1
@@ -313,7 +329,7 @@ class Agent:
                     susCellX, susCellY = getAdjCell(ax, ay, self.agentInfo.getDirection())
                     if not self.inBound(susCellX, susCellY):
                         continue
-                    if not (self.kb.visited[susCellX][susCellY] and self.kb.noWumpus(susCellX, susCellY)):
+                    if not self.kb.noWumpus(susCellX, susCellY):
                         while True:
                             valid, newProperties = mainProg.agentDo(Action.SHOOT)
                             self.addAction(Action.SHOOT)
@@ -326,23 +342,42 @@ class Agent:
                     self.addAction(Action.TURN_RIGHT)
                     self.agentInfo = newProperties
                 mainProg.updatePerceptInPos(ax, ay)
-                self.kb.update(percept, ax, ay)
+            # print('  obj in (0, 2):', mainProg.getObject(0, 2))
+            tmpPercept = mainProg.getPercept(ax, ay)
+            self.kb.update(tmpPercept, ax, ay)
+            # print('percept:', tmpPercept)
             # Move to adjacent
-            safe = False
+            safe = False # safe - unvisited cell that is "SAFE"
             nextPos = -1
             for i, j in [(ax + 1, ay), (ax, ay + 1), (ax - 1, ay), (ax, ay - 1)]:
                 if not self.inBound(i, j):
                     continue
                 status = self.kb.infer(i, j)
                 if self.isSafe(status):
-                    safe = True
                     if not self.kb.isVisited(i, j):
+                        safe = True
                         self.safeList.append((i, j))
+                        self.agentMap[i][j] = 0
                         nextPos = (i, j)
             if safe == False:
-                self.moveToCell((ax, ay), (9, 0), mainProg)
-                break
+                # find unvisited cell that is safe
+                for safePos in self.safeList:
+                    if self.vis[safePos[0]][safePos[1]] == 0:
+                        nextPos = safePos
+                        break
+                if nextPos != -1:
+                    self.moveToCell((ax, ay), nextPos, mainProg)
+                    self.agentInfo.setPosition(nextPos)
+                else:
+                    # End game
+                    self.moveToCell((ax, ay), (0, 0), mainProg)
+                    self.agentInfo.setPosition((0, 0))
+                    break
             else:
-                print('next pos:', nextPos[0], nextPos[1])
+                # if nextPos == -1:
+                #     print('next pos:', nextPos)
+                # else: 
+                #     print('next pos:', nextPos[0], nextPos[1])
                 self.moveToCell((ax, ay), nextPos, mainProg)
+                self.agentInfo.setPosition(nextPos)
         return self.actionList

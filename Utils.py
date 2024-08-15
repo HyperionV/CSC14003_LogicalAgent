@@ -107,8 +107,8 @@ def getDirBetweenCells(x, y, u, v):
     dx = [1, 0, -1, 0]
     dy = [0, 1, 0, -1]
     for k in range(4):
-        new_x = dx + x[k]
-        new_y = dy + y[k]
+        new_x = dx[k] + x
+        new_y = dy[k] + y
         if new_x == u and new_y == v:
             if k == 0:
                 return Direction.DOWN
@@ -153,5 +153,5 @@ def getRotationOrder(initialDir, targetDir):
     listR = rotateRight(initialDir, targetDir)
     listL = rotateLeft(initialDir, targetDir)
     if len(listR) < len(listL):
-        return listR
+        listL = listR
     return listL
