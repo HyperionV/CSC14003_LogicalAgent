@@ -1,4 +1,3 @@
-import program
 from Utils import *
 from pysat.solvers import Glucose3
 from collections import deque
@@ -183,7 +182,7 @@ class KB:
 
 class Agent:
     # Hoang ganh
-    def __init__(self, width, height, mainProg):
+    def __init__(self, width, height):
         self.kb = KB(width, height)
         self.width, self.height = width, height
         self.agentInfo = AgentProperties()
