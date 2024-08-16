@@ -407,6 +407,9 @@ class Agent:
                         continue
                     if not self.kb.noWumpus(susCellX, susCellY):
                         while True:
+                            tmpPercept = mainProg.map[ax][ay].getPercept()
+                            if not (percept & Percept.STENCH):
+                                break
                             if self.vis[susCellX][susCellY] != 0 and self.agentMap[susCellX][susCellY] < 1e9:
                                 break
                             valid, newProperties = mainProg.agentDo(Action.SHOOT)
