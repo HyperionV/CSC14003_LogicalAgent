@@ -69,6 +69,11 @@ class KB:
                 self.percept[(i, j)] = Percept(0)
         self.visited = [[False for _ in range(self.width)] for _ in range(self.height)]
         self.solver = Glucose3()
+    
+    def setVisit(self, u, v):
+        # pass
+        # print(f'set {u}, {v} to 0')
+        self.visited[u][v] = 0
 
     def update(self, percept, x, y):
         self.percept[(x, y)] = percept
@@ -93,17 +98,17 @@ class KB:
         def literalToInt(x, y, obj):
             return (x * self.width + y) * len(Environment) + obj + 1
 
-        if x == 6 and y == 3:
-            # print percepts
-            for i in range(self.height):
-                for j in range(self.width):
-                    if not self.visited[i][j]:
-                        print('(' + str(i) + ', ' + str(j) + ') ?', end=' ')
-                    elif self.percept[(i, j)] & Percept.BREEZE:
-                        print('(' + str(i) + ', ' + str(j) + ') 1', end=' ')
-                    else:
-                        print('(' + str(i) + ', ' + str(j) + ') 0', end=' ')
-                print()
+        # if x == 6 and y == 3:
+        #     # print percepts
+        #     for i in range(self.height):
+        #         for j in range(self.width):
+        #             if not self.visited[i][j]:
+        #                 print('(' + str(i) + ', ' + str(j) + ') ?', end=' ')
+        #             elif self.percept[(i, j)] & Percept.BREEZE:
+        #                 print('(' + str(i) + ', ' + str(j) + ') 1', end=' ')
+        #             else:
+        #                 print('(' + str(i) + ', ' + str(j) + ') 0', end=' ')
+        #         print()
         
         def intToLiteral(literal):
             literal -= 1
@@ -130,16 +135,24 @@ class KB:
 
             if self.percept[(a, b)] & Percept.BREEZE:
                 clause = []
+                if a == 6 and b == 3:
+                    print('percept Breeze')
                 # If there is a breeze in the cell, there is a pit in one of the adjacent cells
                 for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                     if i * j == 0 and a + i >= 0 and a + i < self.height and b + j >= 0 and b + j < self.width:
+                        if a == 6 and b == 3:
+                            print(f'breeze in {a + i}, {b + j}')
                         clause.append(literalToInt(a + i, b + j, Environment.PIT))
                 # if x == 6 and y == 3:
                 #     print('  add clause:', clause)
             else:
                 # If there is no breeze in the cell, there is no pit in the adjacent cells
+                # if a == 6 and b == 3:
+                #     print('percept NO Breeze')
                 for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                     if i * j == 0 and a + i >= 0 and a + i < self.height and b + j >= 0 and b + j < self.width:
+                        # if a == 6 and b == 3:
+                        #     print(f'NO breeze in {a + i}, {b + j}')
                         self.solver.add_clause([-literalToInt(a + i, b + j, Environment.PIT)])
                 # if x == 6 and y == 3:
                 #     print('  add clause:', [-literalToInt(a + i, b + j, Environment.PIT) for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]])
@@ -175,6 +188,8 @@ class KB:
         for i in range(self.height):
             for j in range(self.width):
                 if self.visited[i][j]:
+                    # if x == 6 and y == 3:
+                    #     print('infer 6, 3:', i, j)
                     addClause(i, j)
 
         def getStatus(x, y, obj):
@@ -205,14 +220,14 @@ class Agent:
         self.kb = KB(width, height)
         self.width, self.height = width, height
         self.agentInfo = AgentProperties()
-        self.agentInfo.setPosition((0, 0))
+        self.agentInfo.setPosition((9, 0))
         self.agentMap = [[1e9 for y in range(height + 5)] for x in range(width + 5)]
         self.vis = [[0 for y in range(height + 5)] for x in range(width + 5)]
         self.agentMap[0][0] = 0
         self.safeList = []
         self.poisonList = []
         self.actionList = []
-        self.safeList.append((0, 0))
+        self.safeList.append((9, 0))
         self.point = 0
     def addAction(self, action, gold = 0):
         if action == Action.SHOOT:
@@ -304,6 +319,10 @@ class Agent:
             exit(0)
         self.addAction(Action.FORWARD)
         self.agentInfo = info
+    def revisit(self, adjList):
+        for cell in adjList:
+            x, y = cell
+            self.kb.setVisit(x, y)
     def moveToCell(self, fromCell, toCell, mainProg):
         # print('    move to cell')
         from_x, from_y = fromCell
@@ -339,7 +358,7 @@ class Agent:
                 # print('chet me m roi')
                 break
             ax, ay = self.agentInfo.getPosition()
-            print('\nax, ay:', ax, ay, self.agentInfo.getHealth(), self.agentMap[ax][ay], self.agentMap[6][3], self.kb.infer(6, 3))
+            print('\nax, ay:', ax, ay)
             # print('safeList:', self.safeList)
             # print('poisonList:', self.poisonList)
             percept = mainProg.map[ax][ay].getPercept()
@@ -370,6 +389,8 @@ class Agent:
                     break
                 self.addAction(Action.GRAB)
                 self.agentInfo = newProperties
+                adjList = getAllAdjCell(ax, ay)
+                self.revisit(adjList)
             # Kill all WUMPUS adjacent to agent
             if percept & Percept.STENCH:
                 for k in range(4):
@@ -390,19 +411,23 @@ class Agent:
                     valid, newProperties = mainProg.agentDo(Action.TURN_RIGHT)
                     self.addAction(Action.TURN_RIGHT)
                     self.agentInfo = newProperties
+                adjList = getAllAdjCell(ax, ay)
+                self.revisit(adjList)
                 mainProg.updatePerceptInPos(ax, ay)
                 percept = mainProg.getPercept(ax, ay)
             tmpPercept = mainProg.getPercept(ax, ay)
             
-            if ax == 4 and ay == 7:
-                print('kill wumpus:', ax, ay, self.agentInfo.getHealth(), self.agentMap[ax][ay], self.agentMap[6][3], self.kb.infer(6, 3))
-                print('map percept:', tmpPercept)
+            # if ax == 4 and ay == 7:
+            #     status6_3 = self.kb.infer(6, 3)
+            #     print('kill wumpus:', ax, ay, self.agentInfo.getHealth(), self.isSafe(status6_3), self.agentMap[6][3], status6_3, self.kb.visited[6][3], self.kb.visited[6][2])
+            #     print('map percept:', tmpPercept)
             
+
             self.kb.update(tmpPercept, ax, ay)
             
-            if ax == 4 and ay == 7:
-                print('update logic:', ax, ay, self.agentInfo.getHealth(), self.agentMap[ax][ay], self.agentMap[6][3], self.kb.infer(6, 3))
-            # print('percept:', tmpPercept)
+            # if ax == 4 and ay == 7:
+            #     status6_3 = self.kb.infer(6, 3)
+            #     print('updated logic:', ax, ay, self.agentInfo.getHealth(), self.isSafe(status6_3), self.agentMap[6][3], status6_3, self.kb.visited[6][3], self.kb.visited[6][2])
             # Move to adjacent
             safe = False # safe - unvisited cell that is "SAFE"
             nextPos = -1

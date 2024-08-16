@@ -156,3 +156,16 @@ def getRotationOrder(initialDir, targetDir):
     if len(listR) < len(listL):
         listL = listR
     return listL
+
+def getAllAdjCell(x, y):
+    width = 10
+    height = 10
+    dx = [1, 0, -1, 0]
+    dy = [0, 1, 0, -1]
+    adjList = []
+    for k in range(4):
+        u = dx[k] + x
+        v = dy[k] + y
+        if 0 <= u and u < width and 0 <= v and v < height:
+            adjList.append((u, v))
+    return adjList

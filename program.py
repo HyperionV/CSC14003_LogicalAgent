@@ -33,7 +33,7 @@ class Program:
 
     def runAgent(self):
         actionList = self.agent.agentClear(self)
-        print(actionList)
+        # print(actionList)
         self.load(self.filename)
         self.autoRun(500, actionList)
             
