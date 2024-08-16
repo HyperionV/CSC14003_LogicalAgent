@@ -7,6 +7,7 @@ class Action(Enum):
     SHOOT = auto()
     CLIMB = auto()
     HEAL = auto()
+    POISON = auto()
     
 class ItemType(Enum):
     HEAL = auto()

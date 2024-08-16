@@ -187,6 +187,13 @@ class Program:
                 self.agentInfo.setHealth(health)
                 self.agentInfo.adjustInventory(ItemType.HEAL, -1)
                 isSuccessful = True
+
+        elif action == Action.POISON:
+            health = self.agentInfo.getHealth()
+            health = max(health - 25, 0)
+            self.agentInfo.setHealth(health)
+            isSuccessful = True
+            
         return isSuccessful, self.agentInfo
         
     def agentDoWithUi(self, action):
