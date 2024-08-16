@@ -8,6 +8,7 @@ import tkinter as tk
 
 class Program:
     def __init__(self, width, height, filename):
+        self.current_step = 0
         self.objectImage = {}
         self.filename = filename
         self.cellSize = 90
@@ -24,16 +25,20 @@ class Program:
         self.loadObjectsImage()
         self.load(filename)
 
+    def autoRun(self, speed, actionList):
+        if(self.current_step == len(actionList) or actionList is None):
+            return
+        self.agentDoWithUi(actionList[self.current_step][0])
+        self.canvas.after(speed, self.autoRun, speed, actionList)
+
     def runAgent(self):
         actionList = self.agent.agentClear(self)
+        print(actionList)
         self.load(self.filename)
-        for action in actionList:
-            self.agentDoWithUi(action)
+        self.autoRun(500, actionList)
             
 
     def run(self):
-        self.runAgent()
-        self.load(self.filename)
         self.Gui.run()
         
     
@@ -186,9 +191,17 @@ class Program:
                 self.agentInfo.setHealth(health)
                 self.agentInfo.adjustInventory(ItemType.HEAL, -1)
                 isSuccessful = True
+
+        elif action == Action.POISON:
+            health = self.agentInfo.getHealth()
+            health = max(health - 25, 0)
+            self.agentInfo.setHealth(health)
+            isSuccessful = True
+            
         return isSuccessful, self.agentInfo
         
     def agentDoWithUi(self, action):
+        self.current_step += 1
         isSuccessful = False
         if action == Action.FORWARD:
             x, y = self.agentInfo.getPosition()
@@ -261,6 +274,7 @@ class Program:
             
         self.showMessageOnGui(action, isSuccessful)
         return isSuccessful
+    
     # MAP ON GUI
     def drawMap(self):
         self.canvas.delete("all")

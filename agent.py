@@ -48,7 +48,7 @@ class AgentProperties:
         self.inventory[item] += amount
         
     def getMaxHealth(self):
-        return min(100, self.health + self.inventory[ItemType.HEAL] * 25)
+        return self.health + self.inventory[ItemType.HEAL] * 25
     
 class KB:
     def __init__(self, height, width):
@@ -92,6 +92,18 @@ class KB:
         # Infer the status of the objects in the cell (x, y)
         def literalToInt(x, y, obj):
             return (x * self.width + y) * len(Environment) + obj + 1
+
+        if x == 6 and y == 3:
+            # print percepts
+            for i in range(self.height):
+                for j in range(self.width):
+                    if not self.visited[i][j]:
+                        print('(' + str(i) + ', ' + str(j) + ') ?', end=' ')
+                    elif self.percept[(i, j)] & Percept.BREEZE:
+                        print('(' + str(i) + ', ' + str(j) + ') 1', end=' ')
+                    else:
+                        print('(' + str(i) + ', ' + str(j) + ') 0', end=' ')
+                print()
         
         def intToLiteral(literal):
             literal -= 1
@@ -102,58 +114,61 @@ class KB:
             x = literal
             return (x, y, obj)
         
-        def addClause(x, y):
-            if self.percept[(x, y)] & Percept.STENCH:
+        def addClause(a, b):
+            if self.percept[(a, b)] & Percept.STENCH:
                 clause = []
                 # If there is a stench in the cell, there is a wumpus in one of the adjacent cells
                 for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-                    if i * j == 0 and x + i >= 0 and x + i < self.height and y + j >= 0 and y + j < self.width:
-                        clause.append(literalToInt(x + i, y + j, Environment.WUMPUS))
+                    if i * j == 0 and a + i >= 0 and a + i < self.height and b + j >= 0 and b + j < self.width:
+                        clause.append(literalToInt(a + i, b + j, Environment.WUMPUS))
                 self.solver.add_clause(clause)
             else:
                 # If there is no stench in the cell, there is no wumpus in the adjacent cells
                 for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-                    if i * j == 0 and x + i >= 0 and x + i < self.height and y + j >= 0 and y + j < self.width:
-                        self.solver.add_clause([-literalToInt(x + i, y + j, Environment.WUMPUS)])
+                    if i * j == 0 and a + i >= 0 and a + i < self.height and b + j >= 0 and b + j < self.width:
+                        self.solver.add_clause([-literalToInt(a + i, b + j, Environment.WUMPUS)])
 
-            if self.percept[(x, y)] & Percept.BREEZE:
+            if self.percept[(a, b)] & Percept.BREEZE:
                 clause = []
                 # If there is a breeze in the cell, there is a pit in one of the adjacent cells
                 for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-                    if i * j == 0 and x + i >= 0 and x + i < self.height and y + j >= 0 and y + j < self.width:
-                        clause.append(literalToInt(x + i, y + j, Environment.PIT))
-                self.solver.add_clause(clause)
+                    if i * j == 0 and a + i >= 0 and a + i < self.height and b + j >= 0 and b + j < self.width:
+                        clause.append(literalToInt(a + i, b + j, Environment.PIT))
+                # if x == 6 and y == 3:
+                #     print('  add clause:', clause)
             else:
                 # If there is no breeze in the cell, there is no pit in the adjacent cells
                 for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-                    if i * j == 0 and x + i >= 0 and x + i < self.height and y + j >= 0 and y + j < self.width:
-                        self.solver.add_clause([-literalToInt(x + i, y + j, Environment.PIT)])
+                    if i * j == 0 and a + i >= 0 and a + i < self.height and b + j >= 0 and b + j < self.width:
+                        self.solver.add_clause([-literalToInt(a + i, b + j, Environment.PIT)])
+                # if x == 6 and y == 3:
+                #     print('  add clause:', [-literalToInt(a + i, b + j, Environment.PIT) for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]])
 
-            if self.percept[(x, y)] & Percept.WHIFF:
+            if self.percept[(a, b)] & Percept.WHIFF:
                 clause = []
                 # If there is a whiff in the cell, there is a poison in one of the adjacent cells
                 for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-                    if i * j == 0 and x + i >= 0 and x + i < self.height and y + j >= 0 and y + j < self.width:
-                        clause.append(literalToInt(x + i, y + j, Environment.POISON))
+                    if i * j == 0 and a + i >= 0 and a + i < self.height and b + j >= 0 and b + j < self.width:
+                        clause.append(literalToInt(a + i, b + j, Environment.POISON))
                 self.solver.add_clause(clause)
             else:
                 # If there is no whiff in the cell, there is no poison in the adjacent cells
                 for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-                    if i * j == 0 and x + i >= 0 and x + i < self.height and y + j >= 0 and y + j < self.width:
-                        self.solver.add_clause([-literalToInt(x + i, y + j, Environment.POISON)])
+                    if i * j == 0 and a + i >= 0 and a + i < self.height and b + j >= 0 and b + j < self.width:
+                        self.solver.add_clause([-literalToInt(a + i, b + j, Environment.POISON)])
 
-            if self.percept[(x, y)] & Percept.GLOW:
+            if self.percept[(a, b)] & Percept.GLOW:
                 clause = []
                 # If there is a glow in the cell, there is a heal potion in the adjacent cells
                 for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-                    if i * j == 0 and x + i >= 0 and x + i < self.height and y + j >= 0 and y + j < self.width:
-                        clause.append(literalToInt(x + i, y + j, Environment.HEAL))
+                    if i * j == 0 and a + i >= 0 and a + i < self.height and b + j >= 0 and b + j < self.width:
+                        clause.append(literalToInt(a + i, b + j, Environment.HEAL))
                 self.solver.add_clause(clause)
             else:
                 # If there is no glow in the cell, there is no heal potion in the adjacent cells
                 for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-                    if i * j == 0 and x + i >= 0 and x + i < self.height and y + j >= 0 and y + j < self.width:
-                        self.solver.add_clause([-literalToInt(x + i, y + j, Environment.HEAL)])
+                    if i * j == 0 and a + i >= 0 and a + i < self.height and b + j >= 0 and b + j < self.width:
+                        self.solver.add_clause([-literalToInt(a + i, b + j, Environment.HEAL)])
             
         self.solver = Glucose3()
 
@@ -245,13 +260,13 @@ class Agent:
             return -1
         row, col = u, v
         traceList = []
-        cntPoison = self.agentMap[row][col]
+        cntPoison = 0
         # trace not include starting cell
         while (row, col) != (x, y):
+            cntPoison += self.agentMap[row][col]
             traceList.append((row, col))
             prev = trace[row][col]
             row, col = prev[0], prev[1]
-            cntPoison += self.agentMap[prev[0]][prev[1]]
         traceList = traceList[::-1]
         return traceList, cntPoison
     def inBound(self, x, y):
@@ -299,31 +314,44 @@ class Agent:
             return False # invalid
         traceList, poison = res
         maxHealth = self.agentInfo.getMaxHealth()
-        if poison * 25 >= maxHealth:
-            return False
-        while self.agentInfo.getHealth() <= poison * 25:
-            valid, info = mainProg.agentDo(Action.HEAL)
-            if not valid:
-                print('no heal available (how)')
-            self.agentInfo = info
-            self.addAction(Action.HEAL)
-        # print('     traceList:', traceList)
+        # if poison * 25 >= maxHealth:
+        #     return False
+        healthUse = max(0, poison - maxHealth / 25 + 1)
         cur = (from_x, from_y)
         for tar in traceList:
+            if healthUse > 0:
+                valid, info = mainProg.agentDo(Action.HEAL)
+                self.agentInfo = info
+                self.addAction(Action.HEAL)
+                healthUse -= 1
             self.moveToAdjacentCell(cur, tar, mainProg)
+            mapObject = mainProg.getObject(tar[0], tar[1])
+            if mapObject[Environment.POISON] > 0:
+                if self.agentInfo.getHealth() == 25:
+                    return False
+                valid, info = mainProg.agentDo(Action.POISON)
+                self.agentInfo = info
             cur = tar
         return True # valid
     def agentClear(self, mainProg):
         while True:
+            if self.agentInfo.getHealth() <= 0:
+                # print('chet me m roi')
+                break
             ax, ay = self.agentInfo.getPosition()
-            print('ax, ay:', ax, ay)
-            print('safeList:', self.safeList)
-            percept = mainProg.map[ax][ay].percept
+            print('\nax, ay:', ax, ay, self.agentInfo.getHealth(), self.agentMap[ax][ay], self.agentMap[6][3], self.kb.infer(6, 3))
+            # print('safeList:', self.safeList)
+            # print('poisonList:', self.poisonList)
+            percept = mainProg.map[ax][ay].getPercept()
+            # print('cell percept:', percept)
             status = self.kb.infer(ax, ay)
-            if self.vis[ax][ay] == 0 and mainProg.map[ax][ay].hasObject(Environment.POISON):
+            # print('status:', status)
+            if self.vis[ax][ay] == 0 and not status[Environment.POISON] == Status.NONE and (ax, ay) in self.poisonList:
                 self.poisonList.remove((ax, ay))
                 self.agentMap[ax][ay] = 1
             elif self.vis[ax][ay] == 0:
+                if not self.isSafe(status):
+                    print('Status:', status)
                 self.safeList.remove((ax, ay)) 
                 self.agentMap[ax][ay] = 0
             self.vis[ax][ay] = 1
@@ -363,8 +391,17 @@ class Agent:
                     self.addAction(Action.TURN_RIGHT)
                     self.agentInfo = newProperties
                 mainProg.updatePerceptInPos(ax, ay)
+                percept = mainProg.getPercept(ax, ay)
             tmpPercept = mainProg.getPercept(ax, ay)
+            
+            if ax == 4 and ay == 7:
+                print('kill wumpus:', ax, ay, self.agentInfo.getHealth(), self.agentMap[ax][ay], self.agentMap[6][3], self.kb.infer(6, 3))
+                print('map percept:', tmpPercept)
+            
             self.kb.update(tmpPercept, ax, ay)
+            
+            if ax == 4 and ay == 7:
+                print('update logic:', ax, ay, self.agentInfo.getHealth(), self.agentMap[ax][ay], self.agentMap[6][3], self.kb.infer(6, 3))
             # print('percept:', tmpPercept)
             # Move to adjacent
             safe = False # safe - unvisited cell that is "SAFE"
@@ -372,13 +409,14 @@ class Agent:
             for i, j in [(ax + 1, ay), (ax, ay + 1), (ax - 1, ay), (ax, ay - 1)]:
                 if not self.inBound(i, j):
                     continue
-                status = self.kb.infer(i, j)
-                if self.isSafe(status) and not self.kb.isVisited(i, j):
+                nextStatus = self.kb.infer(i, j)
+                if self.isSafe(nextStatus) and not self.kb.isVisited(i, j):
                     safe = True
                     self.safeList.append((i, j))
                     self.agentMap[i][j] = 0
                     nextPos = (i, j)
-                elif self.isDoable(status) and not self.kb.isVisited(i, j):
+                    # print('  safe:', i, j)
+                elif self.isDoable(nextStatus) and not self.kb.isVisited(i, j):
                     self.poisonList.append((i, j))
                     self.agentMap[i][j] = 1
             if safe == False:
@@ -412,6 +450,10 @@ class Agent:
                 #     print('next pos:', nextPos[0], nextPos[1])
                 self.moveToCell((ax, ay), nextPos, mainProg)
                 self.agentInfo.setPosition(nextPos)
-        for action in self.actionList:
-            print(action)
+        # for action in self.actionList:
+        #     print(action)
+        for i in range(self.width):
+            for j in range(self.height):
+                print(self.agentMap[i][j], end = ' ')
+            print()
         return self.actionList

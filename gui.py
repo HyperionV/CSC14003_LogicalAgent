@@ -57,6 +57,7 @@ class Gui:
         self.program.runAgent()
         # self.program.agentDoWithUi(Action.SHOOT)
         pass    
+
         
     def forwardButtonClicked(self):
         self.program.agentDoWithUi(Action.FORWARD)
