@@ -33,8 +33,11 @@ class Program:
         self.canvas.after(speed, self.autoRun, speed, actionList)
     
     def stepRun(self):
+        # print('step:', self.current_step)
+        if(self.current_step == len(self.actionList) or self.actionList is None):
+            return
         self.agentDoWithUi(self.actionList[self.current_step][0])
-        self.current_step += 1
+        # self.current_step += 1
 
     def runAgent(self):
         self.autoRun(500, self.actionList)
@@ -43,8 +46,7 @@ class Program:
         self.agent = Agent(self.width, self.height) 
         self.actionList = self.agent.agentClear(self)
         self.load(self.filename)
-            
-
+          
     def run(self):
         self.Gui.run()
         
@@ -57,6 +59,7 @@ class Program:
         self.readMap(filename)
         self.updatePercept()
         self.drawMap()
+        self.current_step = 0
 
     def loadObjectsImage(self):
         self.objectImage[Environment.WUMPUS] = tk.PhotoImage(file=ASSET_PATH + "wumpus.png")
