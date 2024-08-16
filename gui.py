@@ -60,7 +60,7 @@ class Gui:
 
         
     def forwardButtonClicked(self):
-        self.program.agentDoWithUi(Action.FORWARD)
+        self.program.stepRun()
         pass
         
     def resetButtonClicked(self):
@@ -72,6 +72,7 @@ class Gui:
         self.clearMessage()
         self.filename = self.getMazeOption()
         self.program.load(self.filename)
+        self.program.getActionList()
     
         
     def getMazeOption(self):

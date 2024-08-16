@@ -8,6 +8,7 @@ import tkinter as tk
 
 class Program:
     def __init__(self, width, height, filename):
+        self.actionList = None
         self.current_step = 0
         self.objectImage = {}
         self.filename = filename
@@ -30,12 +31,18 @@ class Program:
             return
         self.agentDoWithUi(actionList[self.current_step][0])
         self.canvas.after(speed, self.autoRun, speed, actionList)
+    
+    def stepRun(self):
+        self.agentDoWithUi(self.actionList[self.current_step][0])
+        self.current_step += 1
 
     def runAgent(self):
-        actionList = self.agent.agentClear(self)
-        # print(actionList)
+        self.autoRun(500, self.actionList)
+
+    def getActionList(self):
+        self.agent = Agent(self.width, self.height) 
+        self.actionList = self.agent.agentClear(self)
         self.load(self.filename)
-        self.autoRun(500, actionList)
             
 
     def run(self):
@@ -197,12 +204,14 @@ class Program:
             health = max(health - 25, 0)
             self.agentInfo.setHealth(health)
             isSuccessful = True
-            
+
+        self.updatePercept()    
         return isSuccessful, self.agentInfo
         
     def agentDoWithUi(self, action):
         self.current_step += 1
         isSuccessful = False
+        isShootSuccess = False
         if action == Action.FORWARD:
             x, y = self.agentInfo.getPosition()
             if self.agentInfo.getDirection() == Direction.UP:
@@ -255,6 +264,7 @@ class Program:
                 if self.map[nextX][nextY].hasObject(Environment.WUMPUS):
                     self.map[nextX][nextY].removeObject(Environment.WUMPUS)
                     isSuccessful = True
+                    isShootSuccess = True
                 self.animateShoot(nextX, nextY)
                     
             
@@ -271,8 +281,9 @@ class Program:
                 self.agentInfo.setHealth(health)
                 self.agentInfo.adjustInventory(ItemType.HEAL, -1)
                 isSuccessful = True
-            
-        self.showMessageOnGui(action, isSuccessful)
+
+        self.updatePercept()   
+        self.showMessageOnGui(action, isShootSuccess)
         return isSuccessful
     
     # MAP ON GUI
