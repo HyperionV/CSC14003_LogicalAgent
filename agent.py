@@ -11,7 +11,7 @@ class AgentProperties:
         self.inventory = inventory
         
     def __init__(self):
-        self.position = (0, 0)
+        self.position = (9, 0)
         self.direction = Direction.DOWN
         self.health = 100
         self.point = 0
@@ -316,8 +316,8 @@ class Agent:
     def agentClear(self, mainProg):
         while True:
             ax, ay = self.agentInfo.getPosition()
-            # print('ax, ay:', ax, ay)
-            # print('safeList:', self.safeList)
+            print('ax, ay:', ax, ay)
+            print('safeList:', self.safeList)
             percept = mainProg.map[ax][ay].percept
             status = self.kb.infer(ax, ay)
             if self.vis[ax][ay] == 0 and mainProg.map[ax][ay].hasObject(Environment.POISON):

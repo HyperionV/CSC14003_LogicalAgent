@@ -31,10 +31,9 @@ class Program:
             self.agentDoWithUi(action)
             
 
-
     def run(self):
         self.runAgent()
-        self.agent = Agent(self.width, self.height)
+        self.load(self.filename)
         self.Gui.run()
         
     
