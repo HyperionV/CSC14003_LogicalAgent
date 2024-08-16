@@ -360,6 +360,7 @@ class Agent:
             ax, ay = self.agentInfo.getPosition()
             # print('safeList:', self.safeList)
             # print('poisonList:', self.poisonList)
+            mainProg.updatePerceptInPos(ax, ay)
             percept = mainProg.map[ax][ay].getPercept()
             # print('cell percept:', percept)
             status = self.kb.infer(ax, ay)
@@ -383,7 +384,7 @@ class Agent:
                 self.addAction(Action.GRAB, 1)
                 self.agentInfo = newProperties
             # Grab heal
-            while status[Environment.HEAL] == Status.EXIST:
+            while mainProg.map[ax][ay].hasObject(Environment.HEAL):
                 valid, newProperties = mainProg.agentDo(Action.GRAB)
                 if not valid:
                     break
@@ -394,6 +395,9 @@ class Agent:
             # Kill all WUMPUS adjacent to agent
             if percept & Percept.STENCH:
                 for k in range(4):
+                    tmpPercept = mainProg.map[ax][ay].getPercept()
+                    if not (percept & Percept.STENCH):
+                        break
                     susCellX, susCellY = getAdjCell(ax, ay, self.agentInfo.getDirection())
                     # print('  kill ', susCellX, susCellY)
                     if not self.inBound(susCellX, susCellY):
@@ -415,6 +419,7 @@ class Agent:
                     valid, newProperties = mainProg.agentDo(Action.TURN_RIGHT)
                     self.addAction(Action.TURN_RIGHT)
                     self.agentInfo = newProperties
+                    mainProg.updatePerceptInPos(ax, ay)
                 adjList = getAllAdjCell(ax, ay)
                 self.revisit(adjList)
                 mainProg.updatePerceptInPos(ax, ay)
