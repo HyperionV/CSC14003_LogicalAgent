@@ -348,19 +348,19 @@ class Agent:
                 print(row)
             return False # invalid
         traceList, poison = res
-        print('poison:', poison)
         maxHealth = self.agentInfo.getMaxHealth()
         # if poison * 25 >= maxHealth:
         #     return False
-        healthUse = max(0, poison - maxHealth / 25 + 1)
+        healthUse = (int)(max(0, poison - self.agentInfo.getHealth()/25 + 1))
+        # print('poison:', poison, maxHealth, self.agentInfo.getHealth(), healthUse)
         cur = (from_x, from_y)
         if testRun == True:
             if maxHealth / 25 - poison <= 0:
                 return -1
             return (maxHealth / 25 - poison) - 1
-        print(f' from {from_x}, {from_y} - to {to_x}, {to_y}')
+        # print(f' from {from_x}, {from_y} - to {to_x}, {to_y}')
         for tar in traceList:
-            print(f'  move to ({tar[0]}, {tar[1]}) - remaining health:', self.agentInfo.getHealth())
+            # print(f'  move to ({tar[0]}, {tar[1]}) - remaining health:', self.agentInfo.getHealth(), self.agentInfo.inventory[ItemType.HEAL], '  ', healthUse)
             if healthUse > 0:
                 valid, info = mainProg.agentDo(Action.HEAL)
                 self.agentInfo = info
@@ -390,7 +390,7 @@ class Agent:
             percept = mainProg.map[ax][ay].getPercept()
             self.kb.update(percept, ax, ay)
             status = self.kb.infer(ax, ay)
-            print((f'\nax, ay: {ax}, {ay}, {self.agentInfo.getDirection()}, {self.agentInfo.getHealth()}'))
+            # print((f'\nax, ay: {ax}, {ay}, {self.agentInfo.getDirection()}, {self.agentInfo.getHealth()}'))
             # print('cell percept:', percept)
 
             # with open("output.txt", "a") as file:
@@ -511,14 +511,16 @@ class Agent:
                             nextPos = poisonPos
                             break
                     # only go if enough health
-                    if nextPos != -1 and (self.moveToCell((ax, ay), nextPos, mainProg, True) > 1):
+                    remainingHealth = self.moveToCell((ax, ay), self.initialPos, mainProg, True)
+                    # print('  ax, ay, remainingHealth:', ax, ay, remainingHealth)
+                    if nextPos != -1 and (remainingHealth > 1):
                         # print('   find poison cell:', nextPos)
                         # testRun = self.moveToCell((ax, ay), nextPos, mainProg, True)
                         self.moveToCell((ax, ay), nextPos, mainProg)
                         self.agentInfo.setPosition(nextPos)
                     else:
                         # End game
-                        print('end game\n')
+                        # print('end game\n')
                         self.moveToCell((ax, ay), self.initialPos, mainProg)
                         self.agentInfo.setPosition(self.initialPos)
                         break
@@ -531,9 +533,9 @@ class Agent:
                 self.agentInfo.setPosition(nextPos)
         # for action in self.actionList:
         #     print(action)
-        for i in range(self.width):
-            for j in range(self.height):
-                print(self.agentMap[i][j], end = ' ')
-            print()
-        print('safeList:', self.safeList)
+        # for i in range(self.width):
+        #     for j in range(self.height):
+        #         print(self.agentMap[i][j], end = ' ')
+        #     print()
+        # print('safeList:', self.safeList)
         return self.actionList

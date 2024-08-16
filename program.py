@@ -45,7 +45,6 @@ class Program:
     def getActionList(self):
         self.agent = Agent(self.width, self.height) 
         self.actionList = self.agent.agentClear(self)
-        print(self.actionList)
         self.load(self.filename)
           
     def run(self):
@@ -380,7 +379,7 @@ class Program:
         message += ", ".join(content)
         message += "\n"
         message += "Score: " + str(point) + "\n"
-        message += "Health:"
+        message += "Health: "
         message += str(self.agentInfo.getHealth())
         message += "\n\n"
         self.Gui.showMessage(message)
