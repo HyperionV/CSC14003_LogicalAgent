@@ -29,14 +29,14 @@ class Program:
     def autoRun(self, speed, actionList):
         if(self.current_step == len(actionList) or actionList is None):
             return
-        self.agentDoWithUi(actionList[self.current_step][0])
+        self.agentDoWithUi(actionList[self.current_step][0], actionList[self.current_step][1])
         self.canvas.after(speed, self.autoRun, speed, actionList)
     
     def stepRun(self):
         # print('step:', self.current_step)
         if(self.current_step == len(self.actionList) or self.actionList is None):
             return
-        self.agentDoWithUi(self.actionList[self.current_step][0])
+        self.agentDoWithUi(self.actionList[self.current_step][0], self.actionList[self.current_step][1])
         # self.current_step += 1
 
     def runAgent(self):
@@ -211,7 +211,7 @@ class Program:
         self.updatePercept()    
         return isSuccessful, self.agentInfo
         
-    def agentDoWithUi(self, action):
+    def agentDoWithUi(self, action, score):
         self.current_step += 1
         isSuccessful = False
         isShootSuccess = False
@@ -292,7 +292,7 @@ class Program:
             isSuccessful = True
 
         self.updatePercept()   
-        self.showMessageOnGui(action, isShootSuccess)
+        self.showMessageOnGui(action, score, isShootSuccess)
         return isSuccessful
     
     # MAP ON GUI
@@ -338,7 +338,7 @@ class Program:
         mapPos = self.height - x,  y + 1
         return mapPos         # (1, 1) (1, 2) ... (10, 10) (BL -> TR)
 
-    def showMessageOnGui(self, action, shootSuccess = None):
+    def showMessageOnGui(self, action, score, shootSuccess = None):
         agentPos = self.agentInfo.getPosition()
         message = ""
         content = []
@@ -375,10 +375,9 @@ class Program:
             content.append("Glow")
         if shootSuccess:
             content.append("Scream")
-        point = self.agentInfo.getPoint()
         message += ", ".join(content)
         message += "\n"
-        message += "Score: " + str(point) + "\n"
+        message += "Score: " + str(score) + "\n"
         message += "Health: "
         message += str(self.agentInfo.getHealth())
         message += "\n\n"
