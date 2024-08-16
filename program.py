@@ -33,6 +33,8 @@ class Program:
         self.canvas.after(speed, self.autoRun, speed, actionList)
     
     def stepRun(self):
+        if(self.current_step == len(self.actionList) or self.actionList is None):
+            return
         self.agentDoWithUi(self.actionList[self.current_step][0])
         self.current_step += 1
 
