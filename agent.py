@@ -358,12 +358,12 @@ class Agent:
                 # print('chet me m roi')
                 break
             ax, ay = self.agentInfo.getPosition()
-            print('\nax, ay:', ax, ay)
             # print('safeList:', self.safeList)
             # print('poisonList:', self.poisonList)
             percept = mainProg.map[ax][ay].getPercept()
             # print('cell percept:', percept)
             status = self.kb.infer(ax, ay)
+            # print('\nax, ay:', ax, ay)
             # print('status:', status)
             if self.vis[ax][ay] == 0 and not status[Environment.POISON] == Status.NONE and (ax, ay) in self.poisonList:
                 self.poisonList.remove((ax, ay))
@@ -395,7 +395,11 @@ class Agent:
             if percept & Percept.STENCH:
                 for k in range(4):
                     susCellX, susCellY = getAdjCell(ax, ay, self.agentInfo.getDirection())
+                    # print('  kill ', susCellX, susCellY)
                     if not self.inBound(susCellX, susCellY):
+                        valid, newProperties = mainProg.agentDo(Action.TURN_RIGHT)
+                        self.addAction(Action.TURN_RIGHT)
+                        self.agentInfo = newProperties
                         continue
                     if not self.kb.noWumpus(susCellX, susCellY):
                         while True:
@@ -477,8 +481,8 @@ class Agent:
                 self.agentInfo.setPosition(nextPos)
         # for action in self.actionList:
         #     print(action)
-        for i in range(self.width):
-            for j in range(self.height):
-                print(self.agentMap[i][j], end = ' ')
-            print()
+        # for i in range(self.width):
+        #     for j in range(self.height):
+        #         print(self.agentMap[i][j], end = ' ')
+        #     print()
         return self.actionList
