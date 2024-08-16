@@ -33,20 +33,21 @@ class Program:
         self.canvas.after(speed, self.autoRun, speed, actionList)
     
     def stepRun(self):
+        # print('step:', self.current_step)
         if(self.current_step == len(self.actionList) or self.actionList is None):
             return
         self.agentDoWithUi(self.actionList[self.current_step][0])
-        self.current_step += 1
+        # self.current_step += 1
 
     def runAgent(self):
-        self.autoRun(500, self.actionList)
+        self.autoRun(300, self.actionList)
 
     def getActionList(self):
         self.agent = Agent(self.width, self.height) 
         self.actionList = self.agent.agentClear(self)
+        print(self.actionList)
         self.load(self.filename)
-            
-
+          
     def run(self):
         self.Gui.run()
         
@@ -59,6 +60,7 @@ class Program:
         self.readMap(filename)
         self.updatePercept()
         self.drawMap()
+        self.current_step = 0
 
     def loadObjectsImage(self):
         self.objectImage[Environment.WUMPUS] = tk.PhotoImage(file=ASSET_PATH + "wumpus.png")
@@ -283,6 +285,12 @@ class Program:
                 self.agentInfo.setHealth(health)
                 self.agentInfo.adjustInventory(ItemType.HEAL, -1)
                 isSuccessful = True
+        
+        elif action == Action.POISON:
+            health = self.agentInfo.getHealth()
+            health = max(health - 25, 0)
+            self.agentInfo.setHealth(health)
+            isSuccessful = True
 
         self.updatePercept()   
         self.showMessageOnGui(action, isShootSuccess)
@@ -371,7 +379,9 @@ class Program:
         point = self.agentInfo.getPoint()
         message += ", ".join(content)
         message += "\n"
-        message += "Score: " + str(point)
+        message += "Score: " + str(point) + "\n"
+        message += "Health:"
+        message += str(self.agentInfo.getHealth())
         message += "\n\n"
         self.Gui.showMessage(message)
         if(action != Action.SHOOT):

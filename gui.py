@@ -73,6 +73,7 @@ class Gui:
         self.filename = self.getMazeOption()
         self.program.load(self.filename)
         self.program.getActionList()
+        
     
         
     def getMazeOption(self):
@@ -234,7 +235,7 @@ class Gui:
             10.0,
             335.0,
             anchor="nw",
-            text="Infomation",
+            text="Information",
             fill="#FFFFFF",
             font=("Montserrat-Bold", 12 * -1)
         )
