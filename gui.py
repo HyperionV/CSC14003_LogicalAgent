@@ -14,6 +14,7 @@ pyglet.font.add_file("fonts/Montserrat-Bold.ttf")
 class Gui:
     # constructor
     def __init__(self, program):
+        self.state = "pause"
         self.filename = "input.txt"
         self.program = program
         self.window = Tk()
@@ -69,11 +70,15 @@ class Gui:
         pass
         
     def resetButtonClicked(self):
+        if(self.state == "resume"):
+            return
         self.clearMessage()
         self.program.load(self.filename, self.isVisible.get())
             
             
     def updateButtonClicked(self):
+        if(self.state == "resume"):
+            return
         self.clearMessage()
         self.filename = self.getMazeOption()
         self.program.load(self.filename, self.isVisible.get())
@@ -95,11 +100,11 @@ class Gui:
         
     # ~ FUNCTIONS FOR BUTTONS FOR CHANGING TABS ~
     def changePauseresumeState(self, state):
-        pass
         if state == "pause":
             self.pauseresume_button.config(image=self.pause_image,text="Pause")
         elif state == "resume":
             self.pauseresume_button.config(image=self.resume_image,text="Resume")
+        self.state = state
         
 
 
