@@ -18,7 +18,7 @@ class Gui:
         self.filename = "input.txt"
         self.program = program
         self.window = Tk()
-        self.window.title("Findin10Cent")
+        self.window.title("10CentWorld")
         self.window.geometry("1200x920")
         self.window.iconbitmap(self.relative_to_assets("icon2.ico"))
         self.window.configure(bg = "#171435")
