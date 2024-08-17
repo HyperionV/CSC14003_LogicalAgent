@@ -8,6 +8,8 @@ import tkinter as tk
 
 class Program:
     def __init__(self, width, height, filename):
+        self.explored = []
+        self.isvisible = False
         self.actionList = None
         self.current_step = 0
         self.objectImage = {}
@@ -24,10 +26,11 @@ class Program:
             Environment.HEAL: Percept.GLOW
         }
         self.loadObjectsImage()
-        self.load(filename)
+        self.load(filename, False)
 
     def autoRun(self, speed, actionList):
         if(self.current_step == len(actionList) or actionList is None):
+            self.Gui.changePauseresumeState("pause")
             return
         self.agentDoWithUi(actionList[self.current_step][0], actionList[self.current_step][1])
         self.canvas.after(speed, self.autoRun, speed, actionList)
@@ -45,14 +48,16 @@ class Program:
     def getActionList(self):
         self.agent = Agent(self.width, self.height) 
         self.actionList = self.agent.agentClear(self)
-        self.load(self.filename)
+        self.load(self.filename, self.isvisible)
           
     def run(self):
         self.Gui.run()
         
     
-    def load(self, filename):
+    def load(self, filename, isVisible):
+        self.isvisible = isVisible
         self.agent = Agent(self.width, self.height)
+        self.explored.clear()
         self.filename = filename
         self.map = [[Cell() for _ in range(self.width)] for _ in range(self.height)]
         self.agentInfo = AgentProperties()
@@ -129,6 +134,12 @@ class Program:
                     if obj[x] > 0:
                         percept |= self.dict[x]
         self.map[i][j].updatePercept(percept)
+    
+    def getCurrentStep(self):   
+        return self.current_step
+
+    def isActionListEmpty(self):
+        return self.actionList is None
     
     def getPercept(self, i, j):
         return self.map[i][j].getPercept()
@@ -291,6 +302,7 @@ class Program:
             self.agentInfo.setHealth(health)
             isSuccessful = True
 
+        self.explored.append(self.agentInfo.getPosition())
         self.updatePercept()   
         self.showMessageOnGui(action, score, isShootSuccess)
         return isSuccessful
@@ -300,13 +312,22 @@ class Program:
         self.canvas.delete("all")
         for i in range(self.height):
             for j in range(self.width):
+                if not self.isvisible:
+                    if (i, j) not in self.explored:
+                        if i < self.height and j < self.width:
+                            x1 = j * self.cellSize
+                            y1 = i * self.cellSize
+                            x2 = x1 + self.cellSize
+                            y2 = y1 + self.cellSize
+                            self.canvas.create_rectangle(x1, y1, x2, y2, fill="grey", outline="black")
+                        continue
                 x1 = j * self.cellSize
                 y1 = i * self.cellSize
                 x2 = x1 + self.cellSize
                 y2 = y1 + self.cellSize
                 agentPos = self.agentInfo.getPosition()
                 adjacent = [i - agentPos[0], j - agentPos[1]] in [[0, 1], [1, 0], [0, -1], [-1, 0]]
-
+                
                 if i < self.height and j < self.width:
                     cellContent = self.map[i][j].getObjects()
                     self.canvas.create_rectangle(x1, y1, x2, y2, fill="white" if not adjacent else "light yellow", outline="black")
@@ -339,6 +360,9 @@ class Program:
         return mapPos         # (1, 1) (1, 2) ... (10, 10) (BL -> TR)
 
     def showMessageOnGui(self, action, score, shootSuccess = None):
+        if action == Action.POISON:
+            self.Gui.showMessage("You are poisoned and lost 25 health\n")
+            return
         agentPos = self.agentInfo.getPosition()
         message = ""
         content = []

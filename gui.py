@@ -54,24 +54,29 @@ class Gui:
             self.forwardButtonClicked()
 
     def pauseresume_button_clicked(self):
+        if(self.program.isActionListEmpty()):
+            return
+        self.changePauseresumeState("resume")
         self.program.runAgent()
         # self.program.agentDoWithUi(Action.SHOOT)
         pass    
 
         
     def forwardButtonClicked(self):
+        if(self.program.isActionListEmpty()):
+            return
         self.program.stepRun()
         pass
         
     def resetButtonClicked(self):
         self.clearMessage()
-        self.program.load(self.filename)
+        self.program.load(self.filename, self.isVisible.get())
             
             
     def updateButtonClicked(self):
         self.clearMessage()
         self.filename = self.getMazeOption()
-        self.program.load(self.filename)
+        self.program.load(self.filename, self.isVisible.get())
         self.program.getActionList()
         
     
@@ -144,7 +149,22 @@ class Gui:
             height=34.0
         )
 
-        
+        self.isVisible = BooleanVar()
+
+        # Create a Checkbutton widget
+        self.checkbox = Checkbutton(self.sidebar, foreground= "black", variable=self.isVisible, command= None, background= '#171435', activebackground= "#171435")
+        self.checkbox.place(
+            x=170.0,
+            y=97.0,
+        )
+        self.sidebar.create_text(
+            197.0,
+            103.0,
+            anchor="nw",
+            text="Visible",
+            fill="#FFFFFF",
+            font=("Montserrat-Bold", 12 * -1)
+        )
         self.update_button = Button(
                     self.sidebar, 
                     background= '#C67FFC',
