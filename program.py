@@ -39,6 +39,8 @@ class Program:
         with open(f"output/output{fileName}", 'w') as f:
             for item in self.outputFile:
                 f.write(item)
+        f.close()
+        self.outputFile = ''
     
     def stepRun(self):
         if(self.current_step == len(self.actionList) or self.actionList is None):
@@ -47,14 +49,6 @@ class Program:
 
     def runAgent(self):
         self.autoRun(300, self.actionList)
-
-    # def outputActionList(self):
-    #     if self.actionList is None:
-    #         return
-    #     fileName = self.filename.split('input')[-1]
-    #     with open(f"output/output{fileName}", 'w') as f:
-    #         for action in self.actionList:
-    #             f.write(action[0].name + " " + str(action[1]) + "\n")
 
     def getActionList(self):
         self.agent = Agent(self.width, self.height) 
