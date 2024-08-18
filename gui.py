@@ -2,7 +2,6 @@ from pathlib import Path
 from tkinter import *
 from tkinter import scrolledtext
 from tkinter import ttk
-from Utils import Action
 import pyglet
 
 OUTPUT_PATH = Path(__file__).parent
@@ -15,7 +14,7 @@ class Gui:
     # constructor
     def __init__(self, program):
         self.state = "pause"
-        self.filename = "input.txt"
+        self.filename = "input/input.txt"
         self.program = program
         self.window = Tk()
         self.window.title("10CentWorld")
@@ -27,7 +26,6 @@ class Gui:
     
     def clearMessage(self):
         self.messsageOutput.delete(1.0, END)
-        
         
     def relative_to_assets(self, path: str) -> Path:
         return ASSETS_PATH / Path(path)
@@ -42,7 +40,6 @@ class Gui:
     def showMessage(self, message):
         self.messsageOutput.insert(END,  message)
         self.messsageOutput.see(END)
-
 
     def handle_button_press(self, btn_name):
         if btn_name == "pauseresume":
@@ -59,10 +56,7 @@ class Gui:
             return
         self.changePauseresumeState("resume")
         self.program.runAgent()
-        # self.program.agentDoWithUi(Action.SHOOT)
-        pass    
 
-        
     def forwardButtonClicked(self):
         if(self.program.isActionListEmpty()):
             return
@@ -75,7 +69,6 @@ class Gui:
         self.clearMessage()
         self.program.load(self.filename, self.isVisible.get())
             
-            
     def updateButtonClicked(self):
         if(self.state == "resume"):
             return
@@ -84,17 +77,15 @@ class Gui:
         self.program.load(self.filename, self.isVisible.get())
         self.program.getActionList()
         
-    
-        
     def getMazeOption(self):
         maze = self.maze_option.get()
         path = {
-            "Map 1": "input1.txt",
-            "Map 2": "input2.txt",
-            "Map 3": "input3.txt",
-            "Map 4": "input4.txt",
-            "Map 5": "input5.txt",
-            "Read from file": "input.txt"
+            "Map 1": "input/input1.txt",
+            "Map 2": "input/input2.txt",
+            "Map 3": "input/input3.txt",
+            "Map 4": "input/input4.txt",
+            "Map 5": "input/input5.txt",
+            "Read from file": "input/input.txt"
         }
         return path.get(maze) 
         
@@ -105,9 +96,6 @@ class Gui:
         elif state == "resume":
             self.pauseresume_button.config(image=self.resume_image,text="Resume")
         self.state = state
-        
-
-
         
     def init(self):
         self.sidebar = Canvas(

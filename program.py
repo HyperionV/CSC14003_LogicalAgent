@@ -14,6 +14,7 @@ class Program:
         self.current_step = 0
         self.objectImage = {}
         self.filename = filename
+        self.outputFile = ''
         self.cellSize = 90
         self.width = width
         self.height = height
@@ -34,16 +35,26 @@ class Program:
             return
         self.agentDoWithUi(actionList[self.current_step][0], actionList[self.current_step][1])
         self.canvas.after(speed, self.autoRun, speed, actionList)
+        fileName = self.filename.split('input')[-1]
+        with open(f"output/output{fileName}", 'w') as f:
+            for item in self.outputFile:
+                f.write(item)
     
     def stepRun(self):
-        # print('step:', self.current_step)
         if(self.current_step == len(self.actionList) or self.actionList is None):
             return
         self.agentDoWithUi(self.actionList[self.current_step][0], self.actionList[self.current_step][1])
-        # self.current_step += 1
 
     def runAgent(self):
         self.autoRun(300, self.actionList)
+
+    # def outputActionList(self):
+    #     if self.actionList is None:
+    #         return
+    #     fileName = self.filename.split('input')[-1]
+    #     with open(f"output/output{fileName}", 'w') as f:
+    #         for action in self.actionList:
+    #             f.write(action[0].name + " " + str(action[1]) + "\n")
 
     def getActionList(self):
         self.agent = Agent(self.width, self.height) 
@@ -52,7 +63,6 @@ class Program:
           
     def run(self):
         self.Gui.run()
-        
     
     def load(self, filename, isVisible):
         self.isvisible = isVisible
@@ -79,6 +89,7 @@ class Program:
             self.objectImage[ItemType.ARROW].append(tk.PhotoImage(file=ASSET_PATH + "arrow" + str(i) + ".png"))
         for i in range (4):
             self.objectImage[Environment.AGENT].append(tk.PhotoImage(file=ASSET_PATH + "agent" + str(i) + ".png"))
+
     def convertMatrixToMap(self, matrix):
         for i in range(self.height):
             for j in range(self.width):
@@ -107,14 +118,6 @@ class Program:
                         for x in self.dict.keys():
                             if obj[x] > 0:
                                 percept |= self.dict[x]
-                        # if obj[Environment.WUMPUS] > 0:
-                        #     percept |= Percept.STENCH
-                        # if obj[Environment.PIT] > 0:
-                        #     percept |= Percept.BREEZE
-                        # if obj[Environment.POISON] > 0:
-                        #     percept |= Percept.WHIFF
-                        # if obj[Environment.HEAL] > 0:
-                        #     percept |= Percept.GLOW
                 self.map[i][j].updatePercept(percept)
 
     def updatePerceptInPos(self, i, j):
@@ -122,14 +125,6 @@ class Program:
         for x, y in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
             if i + x >= 0 and i + x < self.height and j + y >= 0 and j + y < self.width:
                 obj = self.map[i + x][j + y].getObjects()
-                # if obj[Environment.WUMPUS] > 0:
-                #     percept |= Percept.STENCH
-                # if obj[Environment.PIT] > 0:
-                #     percept |= Percept.BREEZE
-                # if obj[Environment.POISON] > 0:
-                #     percept |= Percept.WHIFF
-                # if obj[Environment.HEAL] > 0:
-                #     percept |= Percept.GLOW
                 for x in self.dict.keys():
                     if obj[x] > 0:
                         percept |= self.dict[x]
@@ -360,6 +355,16 @@ class Program:
         return mapPos         # (1, 1) (1, 2) ... (10, 10) (BL -> TR)
 
     def showMessageOnGui(self, action, score, shootSuccess = None):
+        actions = {
+            Action.FORWARD: "Move forward",
+            Action.TURN_RIGHT: "Turn right",
+            Action.TURN_LEFT: "Turn left",
+            Action.GRAB: "Grab",
+            Action.SHOOT: "Shoot",
+            Action.CLIMB: "Climb",
+            Action.HEAL: "Heal"
+        }
+        self.outputFile += f'({self.agentInfo.getPosition()[0] + 1}, {self.agentInfo.getPosition()[1] + 1}): {actions[action]} - Score: {score} - Percepts: ['
         if action == Action.POISON:
             self.Gui.showMessage("You are poisoned and lost 25 health\n")
             return
@@ -367,20 +372,7 @@ class Program:
         message = ""
         content = []
         message += "Action: "
-        if action == Action.FORWARD:
-            message += "Moved forward"
-        elif action == Action.TURN_RIGHT:
-            message += "Turned right"
-        elif action == Action.TURN_LEFT:
-            message += "Turned left"
-        elif action == Action.GRAB:
-            message += "Grabbed"
-        elif action == Action.SHOOT:
-            message += "Shot"
-        elif action == Action.CLIMB:
-            message += "Climbbed"
-        elif action == Action.HEAL:
-            message += "Healed"
+        message += actions[action]
         message += "\n"
         message += "Current position: "
         message +=  str(self.convertMapPosition(agentPos[0], agentPos[1]))
@@ -400,6 +392,8 @@ class Program:
         if shootSuccess:
             content.append("Scream")
         message += ", ".join(content)
+        self.outputFile += ', '.join(content)
+        self.outputFile += ']\n'
         message += "\n"
         message += "Score: " + str(score) + "\n"
         message += "Health: "
@@ -433,7 +427,6 @@ class Program:
             else:
                 self.canvas.delete(arrowId)
                 self.reloadMap()
-
         moveArrow(0)
     
 

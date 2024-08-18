@@ -30,8 +30,5 @@ class Cell:
     def updatePercept(self, percept):
         self.percept = percept
 
-    # def removePercept(self, percept):
-    #     self.percept &= ~percept
-
     def getPercept(self):
         return self.percept

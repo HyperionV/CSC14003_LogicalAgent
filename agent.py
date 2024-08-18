@@ -71,22 +71,12 @@ class KB:
         self.solver = Glucose3()
     
     def setVisit(self, u, v):
-        # pass
-        # print(f'set {u}, {v} to 0')
         self.visited[u][v] = 0
 
     def update(self, percept, x, y):
         self.percept[(x, y)] = percept
         self.visited[x][y] = True
-        # if not (percept & Percept.STENCH):
-        #     self.mapStatus[x][y][Environment.WUMPUS] = Status.NONE
-        # if not (percept & Percept.BREEZE):
-        #     self.mapStatus[x][y][Environment.PIT] = Status.NONE
-        # if not (percept & Percept.WHIFF):
-        #     self.mapStatus[x][y][Environment.POISON] = Status.NONE
-        # if not (percept & Percept.GLOW):
-        #     self.mapStatus[x][y][Environment.HEAL] = Status.NONE
-    
+
     def isVisited(self, x, y):
         return self.visited[x][y]
     
@@ -97,19 +87,6 @@ class KB:
         # Infer the status of the objects in the cell (x, y)
         def literalToInt(x, y, obj):
             return (x * self.width + y) * len(Environment) + obj + 1
-
-        # if x == 6 and y == 3:
-        #     # print percepts
-        #     for i in range(self.height):
-        #         for j in range(self.width):
-        #             if not self.visited[i][j]:
-        #                 print('(' + str(i) + ', ' + str(j) + ') ?', end=' ')
-        #             elif self.percept[(i, j)] & Percept.BREEZE:
-        #                 print('(' + str(i) + ', ' + str(j) + ') 1', end=' ')
-        #             else:
-        #                 print('(' + str(i) + ', ' + str(j) + ') 0', end=' ')
-        #         print()
-        
         def intToLiteral(literal):
             literal -= 1
             obj = literal % len(Environment)
@@ -139,20 +116,10 @@ class KB:
                 for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                     if i * j == 0 and a + i >= 0 and a + i < self.height and b + j >= 0 and b + j < self.width:
                         clause.append(literalToInt(a + i, b + j, Environment.PIT))
-                # if x == 6 and y == 3:
-                #     print('  add clause:', clause)
             else:
-                # If there is no breeze in the cell, there is no pit in the adjacent cells
-                # if a == 6 and b == 3:
-                #     print('percept NO Breeze')
                 for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                     if i * j == 0 and a + i >= 0 and a + i < self.height and b + j >= 0 and b + j < self.width:
-                        # if a == 6 and b == 3:
-                        #     print(f'NO breeze in {a + i}, {b + j}')
                         self.solver.add_clause([-literalToInt(a + i, b + j, Environment.PIT)])
-                # if x == 6 and y == 3:
-                #     print('  add clause:', [-literalToInt(a + i, b + j, Environment.PIT) for i, j in [(-1, 0), (1, 0), (0, -1), (0, 1)]])
-
             if self.percept[(a, b)] & Percept.WHIFF:
                 clause = []
                 # If there is a whiff in the cell, there is a poison in one of the adjacent cells
@@ -184,8 +151,6 @@ class KB:
         for i in range(self.height):
             for j in range(self.width):
                 if self.visited[i][j]:
-                    # if x == 6 and y == 3:
-                    #     print('infer 6, 3:', i, j)
                     addClause(i, j)
 
         def getStatus(x, y, obj):
@@ -205,13 +170,7 @@ class KB:
 
         return self.mapStatus[(x, y)]
     
-# Environment.WUMPUS: Status.UNKNOWN,
-# Environment.PIT: Status.UNKNOWN,
-# Environment.POISON: Status.UNKNOWN,
-# Environment.GOLD: Status.UNKNOWN,
-# Environment.HEAL: Status.UNKNOWN
 class Agent:
-    # Hoang ganh
     def __init__(self, width, height):
         self.kb = KB(width, height)
         self.width, self.height = width, height
@@ -236,6 +195,7 @@ class Agent:
         else:
             self.point -= 10
         self.actionList.append((action, self.point))
+        
     def findHeuristic(self, x, y):
         dis = [[1e9 for y in range(self.height)] for x in range(self.width)]
         vis = [[0 for y in range(self.height)] for x in range(self.width)]
@@ -273,12 +233,6 @@ class Agent:
         dx = [1, 0, -1, 0]
         dy = [0, 1, 0, -1]
         dq.append((x, y))
-        # print('map')
-        # for i in range(self.width):
-        #     for j in range(self.height):
-        #         # heu[i][j] = (abs(x - i) + abs(y - j))
-        #         print(self.agentMap[i][j], end = ' ')
-        #     print()
         while len(dq) > 0:
             cur = dq.popleft()
             if vis[cur[0]][cur[1]] != 0:
@@ -298,18 +252,10 @@ class Agent:
                     if weight == 0:
                         dq.appendleft((row, col))
                     else:
-                        # print('row, col = 1:', row, col)
                         dq.append((row, col))
-        # print('shortest:', dis[u][v], '--', x, y)
         queue = []
         queue.append((x, y))
         vis = [[0 for y in range(self.height)] for x in range(self.width)]
-        # print('trace before:')
-        # for row in trace:
-        #     print(row)
-        # print('dis:')
-        # for row in dis:
-        #     print(row)
         while len(queue) > 0:
             cur = queue.pop(0)
             if vis[cur[0]][cur[1]] != 0:
@@ -328,23 +274,8 @@ class Agent:
                 if dis[cur[0]][cur[1]] + weight == dis[row][col]:
                     prev = trace[row][col]
                     queue.append((row, col))
-                    # print(' row, col:', row, col, '---', prev[0], prev[1], ' --- ', cur[0], cur[1])
-                    # print('   consider:', heu[prev[0]][prev[1]], ' ', heu[cur[0]][cur[1]])
                     if heu[prev[0]][prev[1]] > heu[cur[0]][cur[1]]:
-                        # print('     upd:', row, col, ' to:', prev)
                         trace[row][col] = cur
-
-        # print('trace:')
-        # for row in trace:
-        #     print(row)
-        # print('dis:')
-        # for i in range(self.width):
-        #     for j in range(self.height):
-        #         val = dis[i][j]
-        #         if val == 1e9:
-        #             val = 'X'
-        #         print(val, end = ' ')
-        #     print()
         if findShortest == True:
             curDis = 1e9
             res = -1
@@ -389,7 +320,6 @@ class Agent:
         to_x, to_y = toCell
         dir = getDirBetweenCells(from_x, from_y, to_x, to_y)
         rotationOrder = getRotationOrder(self.agentInfo.direction, dir)
-        # print('    initial dir:', self.agentInfo.getDirection())
         if len(rotationOrder) > 0:
             for newDir in rotationOrder:
                 if newDir == Direction.RIGHT:
@@ -400,7 +330,6 @@ class Agent:
                     valid, info = mainProg.agentDo(Action.TURN_LEFT)
                     self.agentInfo = info
                     self.addAction(Action.TURN_LEFT)
-        # print('    after:', self.agentInfo.getDirection(), '\n')
         valid, info = mainProg.agentDo(Action.FORWARD)
         if not valid:
             print('moveToAdjacentCell error')
@@ -414,7 +343,6 @@ class Agent:
     def moveToCell(self, fromCell, toCell, mainProg, testRun = False):
         from_x, from_y = fromCell
         to_x, to_y = toCell
-        # print(f'from {from_x}, {from_y} - to {to_x}, {to_y}')
         res = self.findPath(from_x, from_y, to_x, to_y)
         if res == -1:
             print('    invalid tracing')
@@ -424,26 +352,19 @@ class Agent:
         traceList, poison = res
         
         maxHealth = self.agentInfo.getMaxHealth()
-        # if poison * 25 >= maxHealth:
-        #     return False
         healthUse = (int)(max(0, poison - self.agentInfo.getHealth()/25 + 1))
-        # print('           poison:', poison, maxHealth, self.agentInfo.getHealth(), healthUse)
-        # print('  from:', fromCell, 'to:', toCell)
-        # print('  trace list:', traceList)
         cur = (from_x, from_y)
         if testRun == True:
             if maxHealth / 25 - poison <= 0:
                 return -1
             return (maxHealth / 25 - poison) - 1
         for tar in traceList:
-            # print(f'  move to ({tar[0]}, {tar[1]}) - remaining health:', self.agentInfo.getHealth(), self.agentInfo.inventory[ItemType.HEAL], '  ', healthUse)
             if healthUse > 0:
                 valid, info = mainProg.agentDo(Action.HEAL)
                 self.agentInfo = info
                 self.addAction(Action.HEAL)
                 healthUse -= 1
             self.moveToAdjacentCell(cur, tar, mainProg)
-            # mapObject = mainProg.getObject(tar[0], tar[1])
             if mainProg.map[tar[0]][tar[1]].hasObject(Environment.POISON):
                 valid, info = mainProg.agentDo(Action.POISON)
                 self.agentInfo = info
@@ -465,30 +386,12 @@ class Agent:
         cnt = 0
         while True:
             cnt = cnt + 1
-            # if cnt % 10 == 0:
-            #     print('\ncnt:', cnt, len(self.actionList))
-                # print('agent map:')
-                # for row in self.agentMap:
-                #     print(row)
             if self.agentInfo.getHealth() <= 0:
-                # print('chet me m roi')
                 break
             ax, ay = self.agentInfo.getPosition()
-            # print('safeList:', self.safeList)
-            # print('poisonList:', self.poisonList)
             mainProg.updatePerceptInPos(ax, ay)
             percept = mainProg.map[ax][ay].getPercept()
             self.kb.update(percept, ax, ay)
-            status = self.kb.infer(ax, ay)
-            # print('cell percept:', percept)
-
-            # with open("output.txt", "a") as file:
-            #     file.write(f'step {cnt}:\n')
-            #     file.write(f'ax, ay: {ax}, {ay}, {self.agentInfo.getDirection()}' + '\n')
-            #     for row in self.agentMap:
-            #         file.write(" ".join(map(str, row)) + '\n\n')
-
-            # print('status:', status)
             if (ax, ay) in self.poisonList:
                 self.poisonList.remove((ax, ay))
                 if mainProg.map[ax][ay].hasObject(Environment.POISON):
@@ -496,14 +399,8 @@ class Agent:
                 else:
                     self.agentMap[ax][ay] = 0
             elif (ax, ay) in self.safeList:
-                # if not self.isSafe(status) and not self.isDoable(status):
-                #     print('Status:', status, ax, ay)
-                # print('  remove:', ax, ay)
                 self.safeList.remove((ax, ay)) 
                 self.agentMap[ax][ay] = 0
-            # print((f'\nax, ay: {ax}, {ay}, {self.agentInfo.getDirection()}, {self.agentInfo.getHealth()}, {len(self.actionList)}'))
-            # print('safe list:', self.safeList)
-            # print('poison list:', self.poisonList)
             self.vis[ax][ay] = 1
             self.kb.update(mainProg.map[ax][ay].getPercept(), ax, ay)
             # Grab gold
@@ -557,33 +454,19 @@ class Agent:
                 mainProg.updatePerceptInPos(ax, ay)
                 percept = mainProg.getPercept(ax, ay)
             tmpPercept = mainProg.getPercept(ax, ay)
-            # if ax == 4 and ay == 7:
-            #     status6_3 = self.kb.infer(6, 3)
-            #     print('kill wumpus:', ax, ay, self.agentInfo.getHealth(), self.isSafe(status6_3), self.agentMap[6][3], status6_3, self.kb.visited[6][3], self.kb.visited[6][2])
-            #     print('map percept:', tmpPercept)
-            
-
             self.kb.update(tmpPercept, ax, ay)
-            
-            # if ax == 4 and ay == 7:
-            #     status6_3 = self.kb.infer(6, 3)
-            #     print('updated logic:', ax, ay, self.agentInfo.getHealth(), self.isSafe(status6_3), self.agentMap[6][3], status6_3, self.kb.visited[6][3], self.kb.visited[6][2])
+    
             # Move to adjacent
             nextPos = -1
-            # for i, j in [(ax + 1, ay), (ax, ay + 1), (ax - 1, ay), (ax, ay - 1)]:
             for i in range(self.width):
                 for j in range(self.height):
                     if not self.inBound(i, j):
                         continue
-                    # print(' ax, ay:', ax, ay)
-                    # print('  adj:', i, j)
                     nextStatus = self.kb.infer(i, j)
                     if self.isSafe(nextStatus) and not ((i, j) in self.safeList) and self.vis[i][j] == 0:
                         self.safeList.append((i, j))
                         self.agentMap[i][j] = 0
-                        # print('  safe:', i, j)
                     elif nextStatus[Environment.POISON] == Status.EXIST:
-                        # print('POISON', i, j)
                         self.agentMap[i][j] = 1
                     elif self.isDoable(nextStatus) and not ((i, j) in self.poisonList):
                         self.poisonList.append((i, j))
@@ -595,12 +478,7 @@ class Agent:
                 break
             safe = (len(self.safeList) > 0) # safe - unvisited cell that is "SAFE"
             if safe == False:
-                # find unvisited cell that is safe
                 nextPos = self.findPath(ax, ay, 0, 0, True)
-                # for safePos in self.safeList:
-                #     if self.vis[safePos[0]][safePos[1]] == 0:
-                #         nextPos = safePos
-                #         break
                 if nextPos != -1:
                     self.moveToCell((ax, ay), nextPos, mainProg)
                     self.agentInfo.setPosition(nextPos)
@@ -612,10 +490,7 @@ class Agent:
                             break
                     # only go if enough health
                     remainingHealth = self.moveToCell((ax, ay), self.initialPos, mainProg, True)
-                    # print('  ax, ay, remainingHealth:', ax, ay, remainingHealth)
                     if nextPos != -1 and (remainingHealth > 1):
-                        # print('   find poison cell:', nextPos)
-                        # testRun = self.moveToCell((ax, ay), nextPos, mainProg, True)
                         self.moveToCell((ax, ay), nextPos, mainProg)
                         self.agentInfo.setPosition(nextPos)
                     else:
@@ -624,29 +499,7 @@ class Agent:
                         self.agentInfo.setPosition(self.initialPos)
                         break
             else:
-                # if nextPos == -1:
-                #     print('next pos:', nextPos)
-                # else: 
-                #     print('next pos:', nextPos[0], nextPos[1])
                 nextPos = self.findPath(ax, ay, 0, 0, True)
-                # if nextPos == -1:
-                #     print('err -1')
                 self.moveToCell((ax, ay), nextPos, mainProg)
                 self.agentInfo.setPosition(nextPos)
-        # print('actionlist len:', len(self.actionList))
-        # for action in self.actionList:
-        #     print(action)
-        # for i in range(self.width):
-        #     for j in range(self.height):
-        #         print(self.vis[i][j], end = ' ')
-        #     print()
-        # print('\n')
-        # for i in range(self.width):
-        #     for j in range(self.height):
-        #         val = self.agentMap[i][j]
-        #         if val == 1e9:
-        #             val = 'X'
-        #         print(val, end = ' ')
-        #     print()
-        # print('safeList:', self.safeList)
         return self.actionList

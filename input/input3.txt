@@ -1,0 +1,10 @@
+P_G.H_P.P_G.-.P_G.H_P.P_G.-.P_G.H_P
+H_P.G.-.P_G.W.-.P_G.G.-.P_G
+P_G.-.P_G.H_P.P_G.-.P_G.H_P.P_G.-
+-.P_G.W.-.P_G.H_P.-.P_G.W.P_G
+P_G.H_P.P_G.-.P_G.W.P_G.-.P_G.H_P
+H_P.-.P_G.H_P.-.P_G.H_P.P_G.-.G
+P_G.W.-.P_G.H_P.P_G.-.P_G.H_P.P_G
+-.P_G.H_P.W.P_G.-.P_G.W.-.P_G
+P_G.-.P_G.H_P.P_G.H_P.P_G.-.P_G.H_P
+A.P_G.H_P.P_G.-.P_G.W.P_G.H_P.G
