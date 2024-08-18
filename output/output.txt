@@ -1,0 +1,1 @@
+(10, 2): Shoot - Score: -340 - Percepts: [Stench, Breeze]

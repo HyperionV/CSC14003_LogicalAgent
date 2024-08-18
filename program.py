@@ -358,7 +358,8 @@ class Program:
             Action.CLIMB: "Climb",
             Action.HEAL: "Heal"
         }
-        self.outputFile += f'({self.agentInfo.getPosition()[0] + 1}, {self.agentInfo.getPosition()[1] + 1}): {actions[action]} - Score: {score} - Percepts: ['
+        if action != Action.POISON:
+            self.outputFile += f'({self.agentInfo.getPosition()[0] + 1}, {self.agentInfo.getPosition()[1] + 1}): {actions[action]} - Score: {score} - Percepts: ['
         if action == Action.POISON:
             self.Gui.showMessage("You are poisoned and lost 25 health\n")
             return

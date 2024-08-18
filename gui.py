@@ -92,9 +92,9 @@ class Gui:
     # ~ FUNCTIONS FOR BUTTONS FOR CHANGING TABS ~
     def changePauseresumeState(self, state):
         if state == "pause":
-            self.pauseresume_button.config(image=self.pause_image,text="Pause")
+            self.pauseresume_button.config(image=self.pause_image, text="Pause")
         elif state == "resume":
-            self.pauseresume_button.config(image=self.resume_image,text="Resume")
+            self.pauseresume_button.config(image=self.resume_image, text="Resume")
         self.state = state
         
     def init(self):

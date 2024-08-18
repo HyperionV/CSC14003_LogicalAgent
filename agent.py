@@ -345,9 +345,9 @@ class Agent:
         to_x, to_y = toCell
         res = self.findPath(from_x, from_y, to_x, to_y)
         if res == -1:
-            print('    invalid tracing')
-            for row in self.agentMap:
-                print(row)
+            # print('    invalid tracing')
+            # for row in self.agentMap:
+            #     print(row)
             return False # invalid
         traceList, poison = res
         
@@ -403,6 +403,7 @@ class Agent:
                 self.agentMap[ax][ay] = 0
             self.vis[ax][ay] = 1
             self.kb.update(mainProg.map[ax][ay].getPercept(), ax, ay)
+            # print((f'\nax, ay: {ax}, {ay}, {self.agentInfo.getDirection()}, {self.agentInfo.getHealth()}, {len(self.actionList)}'))
             # Grab gold
             while mainProg.map[ax][ay].hasObject(Environment.GOLD):
                 valid, newProperties = mainProg.agentDo(Action.GRAB)
@@ -502,4 +503,5 @@ class Agent:
                 nextPos = self.findPath(ax, ay, 0, 0, True)
                 self.moveToCell((ax, ay), nextPos, mainProg)
                 self.agentInfo.setPosition(nextPos)
+
         return self.actionList
