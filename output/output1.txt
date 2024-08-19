@@ -1,1 +1,0 @@
-(10, 1): Move forward - Score: 2550 - Percepts: []

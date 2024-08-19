@@ -40,13 +40,13 @@ class Program:
         self.agentDoWithUi(self.actionList[self.current_step][0], self.actionList[self.current_step][1])
 
     def runAgent(self):
-        self.autoRun(300, self.actionList)
+        self.autoRun(50, self.actionList)
 
-    def getActionList(self):
+    def getActionList(self, outFile):
         self.agent = Agent(self.width, self.height) 
         self.actionList = self.agent.agentClear(self)
         self.actionList.append((Action.CLIMB, self.actionList[len(self.actionList) - 1][1] + 10))
-        self.outputFile()
+        self.outputFile(outFile)
         self.load(self.filename, self.isvisible)
           
     def run(self):
@@ -414,7 +414,7 @@ class Program:
                 self.reloadMap()
         moveArrow(0)
     
-    def outputFile(self):
+    def outputFile(self, outFile):
         curDirection = Direction.DOWN
         curPos = (9, 0)
         if(self.actionList is None):
@@ -450,7 +450,7 @@ class Program:
             
             mapPos = self.convertMapPosition(curPos[0], curPos[1])
             outputFile.append(str(mapPos) + " : " + actionStr[action] )
-        with open("output.txt", "w") as f:
+        with open(outFile, "w") as f:
             for line in outputFile:
                 f.write(line + "\n")
         f.close()

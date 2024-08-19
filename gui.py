@@ -73,20 +73,20 @@ class Gui:
         if(self.state == "resume"):
             return
         self.clearMessage()
-        self.filename = self.getMazeOption()
+        self.filename, outFile = self.getMazeOption()
         self.program.load(self.filename, self.isVisible.get())
-        self.program.getActionList()
+        self.program.getActionList(outFile)
 
         
     def getMazeOption(self):
         maze = self.maze_option.get()
         path = {
-            "Map 1": "input/input1.txt",
-            "Map 2": "input/input2.txt",
-            "Map 3": "input/input3.txt",
-            "Map 4": "input/input4.txt",
-            "Map 5": "input/input5.txt",
-            "Read from file": "input/input.txt"
+            "Map 1": ("input/input1.txt", "output/result1.txt"),
+            "Map 2": ("input/input2.txt" , "output/result2.txt"),
+            "Map 3": ("input/input3.txt", "output/result3.txt"),
+            "Map 4": ("input/input4.txt", "output/result4.txt"),
+            "Map 5": ("input/input5.txt", "output/result5.txt"),
+            "Read from file": ("input/input.txt", "output/result.txt")
         }
         return path.get(maze) 
         

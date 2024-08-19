@@ -1,0 +1,292 @@
+(1, 1) : Turn left
+(1, 2) : Move forward
+(1, 2) : Turn left
+(2, 2) : Move forward
+(3, 2) : Move forward
+(3, 2) : Grab
+(4, 2) : Move forward
+(4, 2) : Turn left
+(4, 2) : Turn left
+(3, 2) : Move forward
+(3, 2) : Turn right
+(3, 1) : Move forward
+(3, 1) : Turn left
+(3, 1) : Turn left
+(3, 2) : Move forward
+(3, 3) : Move forward
+(3, 3) : Turn right
+(2, 3) : Move forward
+(2, 3) : Turn right
+(2, 3) : Turn right
+(2, 3) : Turn right
+(2, 3) : Shoot
+(2, 3) : Shoot
+(2, 3) : Shoot
+(2, 3) : Turn right
+(1, 3) : Move forward
+(1, 3) : Turn left
+(1, 4) : Move forward
+(1, 4) : Grab
+(1, 4) : Turn left
+(2, 4) : Move forward
+(3, 4) : Move forward
+(4, 4) : Move forward
+(4, 4) : Turn left
+(4, 4) : Turn left
+(3, 4) : Move forward
+(3, 4) : Turn left
+(3, 5) : Move forward
+(3, 5) : Grab
+(3, 5) : Grab
+(3, 5) : Turn right
+(2, 5) : Move forward
+(1, 5) : Move forward
+(1, 5) : Turn left
+(1, 6) : Move forward
+(1, 6) : Turn left
+(2, 6) : Move forward
+(3, 6) : Move forward
+(4, 6) : Move forward
+(4, 6) : Shoot
+(4, 6) : Shoot
+(4, 6) : Turn right
+(4, 6) : Turn left
+(4, 6) : Turn left
+(4, 5) : Move forward
+(4, 5) : Grab
+(4, 5) : Turn right
+(5, 5) : Move forward
+(5, 5) : Turn right
+(5, 6) : Move forward
+(5, 6) : Grab
+(5, 6) : Turn left
+(6, 6) : Move forward
+(6, 6) : Grab
+(6, 6) : Turn left
+(6, 5) : Move forward
+(6, 5) : Shoot
+(6, 5) : Shoot
+(6, 5) : Turn right
+(7, 5) : Move forward
+(7, 5) : Grab
+(7, 5) : Turn right
+(7, 6) : Move forward
+(7, 6) : Turn right
+(6, 6) : Move forward
+(6, 6) : Turn left
+(6, 7) : Move forward
+(6, 7) : Turn right
+(5, 7) : Move forward
+(4, 7) : Move forward
+(3, 7) : Move forward
+(3, 7) : Grab
+(3, 7) : Turn right
+(3, 7) : Turn right
+(3, 7) : Turn right
+(3, 7) : Shoot
+(3, 7) : Shoot
+(3, 7) : Turn right
+(2, 7) : Move forward
+(1, 7) : Move forward
+(1, 7) : Grab
+(1, 7) : Turn left
+(1, 8) : Move forward
+(1, 8) : Turn left
+(2, 8) : Move forward
+(3, 8) : Move forward
+(4, 8) : Move forward
+(4, 8) : Grab
+(4, 8) : Turn left
+(4, 8) : Turn left
+(3, 8) : Move forward
+(3, 8) : Turn left
+(3, 9) : Move forward
+(3, 9) : Turn right
+(2, 9) : Move forward
+(1, 9) : Move forward
+(1, 9) : Grab
+(1, 9) : Turn left
+(1, 10) : Move forward
+(1, 10) : Grab
+(1, 10) : Turn left
+(1, 10) : Turn left
+(1, 9) : Move forward
+(1, 9) : Turn right
+(2, 9) : Move forward
+(3, 9) : Move forward
+(3, 9) : Turn left
+(3, 8) : Move forward
+(3, 7) : Move forward
+(3, 6) : Move forward
+(3, 5) : Move forward
+(3, 4) : Move forward
+(3, 4) : Turn right
+(4, 4) : Move forward
+(5, 4) : Move forward
+(5, 4) : Turn right
+(5, 4) : Turn right
+(5, 4) : Turn right
+(5, 4) : Shoot
+(5, 4) : Shoot
+(5, 4) : Turn right
+(6, 4) : Move forward
+(6, 4) : Grab
+(6, 4) : Turn right
+(6, 4) : Turn right
+(6, 4) : Turn right
+(6, 4) : Shoot
+(6, 4) : Shoot
+(6, 4) : Turn right
+(7, 4) : Move forward
+(7, 4) : Turn right
+(7, 5) : Move forward
+(7, 5) : Turn left
+(8, 5) : Move forward
+(8, 5) : Grab
+(8, 5) : Grab
+(9, 5) : Move forward
+(9, 5) : Turn left
+(9, 5) : Turn left
+(8, 5) : Move forward
+(8, 5) : Turn right
+(8, 4) : Move forward
+(8, 4) : Grab
+(8, 4) : Turn left
+(7, 4) : Move forward
+(7, 4) : Turn left
+(7, 5) : Move forward
+(7, 6) : Move forward
+(7, 6) : Turn left
+(8, 6) : Move forward
+(9, 6) : Move forward
+(9, 6) : Grab
+(9, 6) : Shoot
+(9, 6) : Shoot
+(9, 6) : Turn right
+(9, 6) : Shoot
+(9, 6) : Shoot
+(9, 6) : Shoot
+(9, 6) : Turn right
+(9, 6) : Turn left
+(9, 6) : Turn left
+(10, 6) : Move forward
+(10, 6) : Turn left
+(10, 5) : Move forward
+(10, 5) : Turn left
+(10, 5) : Turn left
+(10, 6) : Move forward
+(10, 7) : Move forward
+(10, 7) : Turn right
+(9, 7) : Move forward
+(9, 7) : Turn left
+(9, 7) : Turn left
+(10, 7) : Move forward
+(10, 7) : Turn right
+(10, 8) : Move forward
+(10, 8) : Turn right
+(9, 8) : Move forward
+(9, 8) : Turn left
+(9, 9) : Move forward
+(9, 9) : Shoot
+(9, 9) : Turn right
+(9, 9) : Shoot
+(9, 9) : Shoot
+(9, 9) : Turn right
+(9, 8) : Move forward
+(9, 8) : Turn left
+(8, 8) : Move forward
+(8, 8) : Turn left
+(8, 9) : Move forward
+(8, 9) : Grab
+(8, 10) : Move forward
+(8, 10) : Grab
+(8, 10) : Turn left
+(9, 10) : Move forward
+(10, 10) : Move forward
+(10, 10) : Turn left
+(10, 10) : Turn left
+(9, 10) : Move forward
+(8, 10) : Move forward
+(7, 10) : Move forward
+(7, 10) : Turn right
+(7, 9) : Move forward
+(7, 9) : Grab
+(7, 8) : Move forward
+(7, 8) : Grab
+(7, 8) : Turn left
+(7, 8) : Turn left
+(7, 9) : Move forward
+(7, 9) : Turn right
+(6, 9) : Move forward
+(6, 9) : Turn left
+(6, 9) : Turn left
+(7, 9) : Move forward
+(7, 9) : Turn left
+(7, 8) : Move forward
+(7, 8) : Turn right
+(8, 8) : Move forward
+(9, 8) : Move forward
+(9, 8) : Turn left
+(9, 7) : Move forward
+(9, 6) : Move forward
+(9, 6) : Turn left
+(8, 6) : Move forward
+(7, 6) : Move forward
+(7, 6) : Turn right
+(7, 5) : Move forward
+(7, 4) : Move forward
+(7, 4) : Turn left
+(6, 4) : Move forward
+(6, 4) : Turn right
+(6, 3) : Move forward
+(6, 3) : Turn left
+(6, 3) : Turn left
+(6, 4) : Move forward
+(6, 4) : Turn right
+(5, 4) : Move forward
+(4, 4) : Move forward
+(3, 4) : Move forward
+(3, 4) : Turn right
+(3, 3) : Move forward
+(3, 2) : Move forward
+(3, 1) : Move forward
+(3, 1) : Turn left
+(2, 1) : Move forward
+(2, 1) : Turn left
+(2, 1) : Turn left
+(3, 1) : Move forward
+(3, 1) : Turn right
+(3, 2) : Move forward
+(3, 3) : Move forward
+(3, 4) : Move forward
+(3, 4) : Turn left
+(4, 4) : Move forward
+(5, 4) : Move forward
+(6, 4) : Move forward
+(7, 4) : Move forward
+(8, 4) : Move forward
+(9, 4) : Move forward
+(9, 4) : Turn left
+(9, 4) : Turn left
+(8, 4) : Move forward
+(8, 4) : Turn right
+(8, 3) : Move forward
+(8, 3) : Shoot
+(8, 3) : Shoot
+(8, 3) : Turn right
+(8, 3) : Turn right
+(8, 4) : Move forward
+(8, 4) : Turn right
+(7, 4) : Move forward
+(6, 4) : Move forward
+(5, 4) : Move forward
+(4, 4) : Move forward
+(3, 4) : Move forward
+(3, 4) : Turn right
+(3, 3) : Move forward
+(3, 2) : Move forward
+(3, 1) : Move forward
+(3, 1) : Turn left
+(2, 1) : Move forward
+(1, 1) : Move forward
+(1, 1) : Climb
