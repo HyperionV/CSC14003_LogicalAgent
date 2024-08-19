@@ -1,1 +1,1 @@
-(10, 2): Shoot - Score: -340 - Percepts: [Stench, Breeze]
+(10, 1): Climb - Score: 12550 - Percepts: []

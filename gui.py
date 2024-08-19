@@ -76,6 +76,7 @@ class Gui:
         self.filename = self.getMazeOption()
         self.program.load(self.filename, self.isVisible.get())
         self.program.getActionList()
+
         
     def getMazeOption(self):
         maze = self.maze_option.get()

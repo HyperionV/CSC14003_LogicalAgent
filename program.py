@@ -2,7 +2,6 @@ from Utils import *
 from Cell import Cell
 from agent import AgentProperties
 from agent import Agent
-from agent import KB
 from gui import Gui
 import tkinter as tk
 
@@ -14,7 +13,6 @@ class Program:
         self.current_step = 0
         self.objectImage = {}
         self.filename = filename
-        self.outputFile = ''
         self.cellSize = 90
         self.width = width
         self.height = height
@@ -35,12 +33,6 @@ class Program:
             return
         self.agentDoWithUi(actionList[self.current_step][0], actionList[self.current_step][1])
         self.canvas.after(speed, self.autoRun, speed, actionList)
-        fileName = self.filename.split('input')[-1]
-        with open(f"output/output{fileName}", 'w') as f:
-            for item in self.outputFile:
-                f.write(item)
-        f.close()
-        self.outputFile = ''
     
     def stepRun(self):
         if(self.current_step == len(self.actionList) or self.actionList is None):
@@ -53,6 +45,8 @@ class Program:
     def getActionList(self):
         self.agent = Agent(self.width, self.height) 
         self.actionList = self.agent.agentClear(self)
+        self.actionList.append((Action.CLIMB, self.actionList[len(self.actionList) - 1][1] + 10))
+        self.outputFile()
         self.load(self.filename, self.isvisible)
           
     def run(self):
@@ -85,6 +79,7 @@ class Program:
             self.objectImage[Environment.AGENT].append(tk.PhotoImage(file=ASSET_PATH + "agent" + str(i) + ".png"))
 
     def convertMatrixToMap(self, matrix):
+
         for i in range(self.height):
             for j in range(self.width):
                 cell = matrix[i][j]
@@ -215,6 +210,7 @@ class Program:
         self.current_step += 1
         isSuccessful = False
         isShootSuccess = False
+        agentX, agentY = self.agentInfo.getPosition()
         if action == Action.FORWARD:
             x, y = self.agentInfo.getPosition()
             if self.agentInfo.getDirection() == Direction.UP:
@@ -293,7 +289,7 @@ class Program:
 
         self.explored.append(self.agentInfo.getPosition())
         self.updatePercept()   
-        self.showMessageOnGui(action, score, isShootSuccess)
+        self.showMessageOnGui((agentX, agentY), action, score, isShootSuccess)
         return isSuccessful
     
     # MAP ON GUI
@@ -348,7 +344,9 @@ class Program:
         mapPos = self.height - x,  y + 1
         return mapPos         # (1, 1) (1, 2) ... (10, 10) (BL -> TR)
 
-    def showMessageOnGui(self, action, score, shootSuccess = None):
+    def showMessageOnGui(self, agentPos, action, score, shootSuccess = None):
+        if(action == Action.POISON):
+            return
         actions = {
             Action.FORWARD: "Move forward",
             Action.TURN_RIGHT: "Turn right",
@@ -358,20 +356,14 @@ class Program:
             Action.CLIMB: "Climb",
             Action.HEAL: "Heal"
         }
-        if action != Action.POISON:
-            self.outputFile += f'({self.agentInfo.getPosition()[0] + 1}, {self.agentInfo.getPosition()[1] + 1}): {actions[action]} - Score: {score} - Percepts: ['
-        if action == Action.POISON:
-            self.Gui.showMessage("You are poisoned and lost 25 health\n")
-            return
-        agentPos = self.agentInfo.getPosition()
         message = ""
         content = []
+        message += "Position: "
+        message +=  str(self.convertMapPosition(agentPos[0], agentPos[1]))
+        message += '\n'
         message += "Action: "
         message += actions[action]
         message += "\n"
-        message += "Current position: "
-        message +=  str(self.convertMapPosition(agentPos[0], agentPos[1]))
-        message += '\n'
         message += "Pecrepts: "
         percept = self.map[agentPos[0]][agentPos[1]].getPercept()
         if percept & Percept.STENCH:
@@ -387,8 +379,6 @@ class Program:
         if shootSuccess:
             content.append("Scream")
         message += ", ".join(content)
-        self.outputFile += ', '.join(content)
-        self.outputFile += ']\n'
         message += "\n"
         message += "Score: " + str(score) + "\n"
         message += "Health: "
@@ -424,6 +414,46 @@ class Program:
                 self.reloadMap()
         moveArrow(0)
     
+    def outputFile(self):
+        curDirection = Direction.DOWN
+        curPos = (9, 0)
+        if(self.actionList is None):
+            return
+        actionStr = {
+            Action.FORWARD: "Move forward",
+            Action.TURN_RIGHT: "Turn right",
+            Action.TURN_LEFT: "Turn left",
+            Action.GRAB: "Grab",
+            Action.SHOOT: "Shoot",
+            Action.CLIMB: "Climb",
+            Action.HEAL: "Heal"
+        }
+        outputFile = []
+
+        for i in range (len(self.actionList)):
+            action = self.actionList[i][0]
+            if(action == Action.POISON):
+                continue
+            if(action == Action.TURN_RIGHT):
+                curDirection = turnRight(curDirection)
+            elif(action == Action.TURN_LEFT):
+                curDirection = turnLeft(curDirection)
+            elif(action == Action.FORWARD):
+                if(curDirection == Direction.UP):
+                    curPos = (curPos[0] - 1, curPos[1])
+                elif(curDirection == Direction.DOWN):
+                    curPos = (curPos[0] + 1, curPos[1])
+                elif(curDirection == Direction.LEFT):
+                    curPos = (curPos[0], curPos[1] - 1)
+                else:
+                    curPos = (curPos[0], curPos[1] + 1)
+            
+            mapPos = self.convertMapPosition(curPos[0], curPos[1])
+            outputFile.append(str(mapPos) + " : " + actionStr[action] )
+        with open("output.txt", "w") as f:
+            for line in outputFile:
+                f.write(line + "\n")
+        f.close()
 
     def reloadMap(self):
         self.drawMap()
