@@ -40,13 +40,12 @@ class Program:
         self.agentDoWithUi(self.actionList[self.current_step][0], self.actionList[self.current_step][1])
 
     def runAgent(self):
-        self.autoRun(50, self.actionList)
+        self.autoRun(200, self.actionList)
 
-    def getActionList(self, outFile):
+    def getActionList(self):
         self.agent = Agent(self.width, self.height) 
         self.actionList = self.agent.agentClear(self)
         self.actionList.append((Action.CLIMB, self.actionList[len(self.actionList) - 1][1] + 10))
-        self.outputFile(outFile)
         self.load(self.filename, self.isvisible)
           
     def run(self):
@@ -387,6 +386,9 @@ class Program:
         self.Gui.showMessage(message)
         if(action != Action.SHOOT):
             self.reloadMap()
+        if(self.current_step == len(self.actionList)):
+            self.Gui.writeOutputFile()
+        
 
 
     def animateShoot(self, nextX, nextY):
@@ -413,47 +415,6 @@ class Program:
                 self.canvas.delete(arrowId)
                 self.reloadMap()
         moveArrow(0)
-    
-    def outputFile(self, outFile):
-        curDirection = Direction.DOWN
-        curPos = (9, 0)
-        if(self.actionList is None):
-            return
-        actionStr = {
-            Action.FORWARD: "Move forward",
-            Action.TURN_RIGHT: "Turn right",
-            Action.TURN_LEFT: "Turn left",
-            Action.GRAB: "Grab",
-            Action.SHOOT: "Shoot",
-            Action.CLIMB: "Climb",
-            Action.HEAL: "Heal"
-        }
-        outputFile = []
-
-        for i in range (len(self.actionList)):
-            action = self.actionList[i][0]
-            if(action == Action.POISON):
-                continue
-            if(action == Action.TURN_RIGHT):
-                curDirection = turnRight(curDirection)
-            elif(action == Action.TURN_LEFT):
-                curDirection = turnLeft(curDirection)
-            elif(action == Action.FORWARD):
-                if(curDirection == Direction.UP):
-                    curPos = (curPos[0] - 1, curPos[1])
-                elif(curDirection == Direction.DOWN):
-                    curPos = (curPos[0] + 1, curPos[1])
-                elif(curDirection == Direction.LEFT):
-                    curPos = (curPos[0], curPos[1] - 1)
-                else:
-                    curPos = (curPos[0], curPos[1] + 1)
-            
-            mapPos = self.convertMapPosition(curPos[0], curPos[1])
-            outputFile.append(str(mapPos) + " : " + actionStr[action] )
-        with open(outFile, "w") as f:
-            for line in outputFile:
-                f.write(line + "\n")
-        f.close()
 
     def reloadMap(self):
         self.drawMap()

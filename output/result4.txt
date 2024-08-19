@@ -1,261 +1,261 @@
-(1, 1) : Turn left
-(1, 2) : Move forward
-(1, 2) : Turn left
-(2, 2) : Move forward
-(2, 2) : Shoot
-(2, 2) : Turn right
-(2, 2) : Shoot
-(2, 2) : Shoot
-(2, 2) : Turn right
-(2, 2) : Turn left
-(2, 2) : Turn left
-(3, 2) : Move forward
-(3, 2) : Grab
-(4, 2) : Move forward
-(4, 2) : Turn left
-(4, 2) : Turn left
-(3, 2) : Move forward
-(3, 2) : Turn right
-(3, 1) : Move forward
-(3, 1) : Turn left
-(3, 1) : Turn left
-(3, 2) : Move forward
-(3, 3) : Move forward
-(3, 3) : Grab
-(3, 3) : Turn right
-(2, 3) : Move forward
-(1, 3) : Move forward
-(1, 3) : Turn left
-(1, 4) : Move forward
-(1, 4) : Shoot
-(1, 4) : Shoot
-(1, 4) : Turn right
-(1, 4) : Turn left
-(1, 4) : Turn left
-(2, 4) : Move forward
-(3, 4) : Move forward
-(3, 4) : Grab
-(3, 4) : Turn left
-(3, 3) : Move forward
-(3, 3) : Turn right
-(4, 3) : Move forward
-(4, 3) : Grab
-(5, 3) : Move forward
-(5, 3) : Shoot
-(5, 3) : Turn right
-(5, 3) : Shoot
-(5, 3) : Shoot
-(5, 3) : Turn right
-(4, 3) : Move forward
-(4, 3) : Turn left
-(4, 4) : Move forward
-(4, 4) : Shoot
-(4, 4) : Shoot
-(4, 4) : Turn right
-(4, 4) : Turn left
-(4, 4) : Turn left
-(5, 4) : Move forward
-(6, 4) : Move forward
-(6, 4) : Shoot
-(6, 4) : Turn right
-(6, 4) : Shoot
-(6, 4) : Shoot
-(6, 4) : Turn right
-(6, 4) : Turn left
-(6, 4) : Turn left
-(7, 4) : Move forward
-(7, 4) : Grab
-(7, 4) : Shoot
-(7, 4) : Turn right
-(7, 4) : Shoot
-(7, 4) : Turn right
-(7, 4) : Turn right
-(7, 4) : Shoot
-(7, 4) : Shoot
-(7, 4) : Turn left
-(6, 4) : Move forward
-(6, 4) : Turn right
-(6, 3) : Move forward
-(6, 3) : Grab
-(6, 3) : Grab
-(6, 3) : Turn right
-(7, 3) : Move forward
-(7, 3) : Grab
-(8, 3) : Move forward
-(8, 3) : Grab
-(8, 3) : Turn left
-(8, 3) : Turn left
-(7, 3) : Move forward
-(7, 3) : Turn right
-(7, 2) : Move forward
-(7, 2) : Turn left
-(6, 2) : Move forward
-(6, 2) : Grab
-(6, 2) : Turn left
-(6, 2) : Turn left
-(7, 2) : Move forward
-(8, 2) : Move forward
-(9, 2) : Move forward
-(9, 2) : Shoot
-(9, 2) : Shoot
-(9, 2) : Turn right
-(9, 2) : Turn right
-(9, 2) : Turn right
-(9, 2) : Shoot
-(9, 2) : Shoot
-(9, 2) : Shoot
-(9, 2) : Turn left
-(8, 2) : Move forward
-(8, 2) : Turn right
-(8, 1) : Move forward
-(8, 1) : Turn left
-(7, 1) : Move forward
-(7, 1) : Grab
-(7, 1) : Turn left
-(7, 1) : Turn left
-(8, 1) : Move forward
-(9, 1) : Move forward
-(9, 1) : Grab
-(9, 1) : Grab
-(10, 1) : Move forward
-(10, 1) : Turn right
-(10, 2) : Move forward
-(10, 3) : Move forward
-(10, 3) : Turn left
-(10, 3) : Turn left
-(10, 2) : Move forward
-(10, 2) : Turn left
-(9, 2) : Move forward
-(8, 2) : Move forward
-(8, 2) : Turn left
-(8, 3) : Move forward
-(8, 3) : Turn right
-(7, 3) : Move forward
-(7, 3) : Turn left
-(7, 4) : Move forward
-(7, 4) : Turn right
-(6, 4) : Move forward
-(6, 4) : Turn left
-(6, 5) : Move forward
-(6, 5) : Turn right
-(5, 5) : Move forward
-(4, 5) : Move forward
-(4, 5) : Turn right
-(4, 4) : Move forward
-(4, 4) : Turn left
-(3, 4) : Move forward
-(2, 4) : Move forward
-(2, 4) : Turn left
-(2, 5) : Move forward
-(2, 5) : Turn right
-(1, 5) : Move forward
-(1, 5) : Turn left
-(1, 6) : Move forward
-(1, 6) : Turn left
-(2, 6) : Move forward
-(2, 6) : Grab
-(2, 6) : Turn left
-(2, 6) : Turn left
-(1, 6) : Move forward
-(1, 6) : Turn left
-(1, 7) : Move forward
-(1, 7) : Shoot
-(1, 7) : Shoot
-(1, 7) : Turn right
-(1, 7) : Turn right
-(1, 6) : Move forward
-(1, 5) : Move forward
-(1, 4) : Move forward
-(1, 3) : Move forward
-(1, 2) : Move forward
-(1, 1) : Move forward
-(1, 1) : Turn right
-(2, 1) : Move forward
-(2, 1) : Grab
-(3, 1) : Move forward
-(3, 1) : Turn right
-(3, 2) : Move forward
-(3, 2) : Turn left
-(4, 2) : Move forward
-(4, 2) : Turn right
-(4, 3) : Move forward
-(4, 4) : Move forward
-(4, 5) : Move forward
-(4, 5) : Turn left
-(4, 5) : Turn left
-(4, 4) : Move forward
-(4, 3) : Move forward
-(4, 3) : Turn right
-(5, 3) : Move forward
-(6, 3) : Move forward
-(6, 3) : Turn left
-(6, 2) : Move forward
-(6, 1) : Move forward
-(6, 1) : Turn left
-(5, 1) : Move forward
-(5, 1) : Heal
-(5, 1) : Turn left
-(5, 1) : Turn left
-(6, 1) : Move forward
-(6, 1) : Heal
-(6, 1) : Turn right
-(6, 2) : Move forward
-(6, 2) : Heal
-(6, 3) : Move forward
-(6, 4) : Move forward
-(6, 4) : Turn right
-(5, 4) : Move forward
-(5, 4) : Turn left
-(5, 5) : Move forward
-(5, 6) : Move forward
-(5, 6) : Turn left
-(5, 6) : Turn left
-(5, 5) : Move forward
-(5, 5) : Turn left
-(4, 5) : Move forward
-(4, 5) : Turn right
-(4, 4) : Move forward
-(4, 4) : Turn left
-(3, 4) : Move forward
-(2, 4) : Move forward
-(2, 4) : Turn left
-(2, 5) : Move forward
-(2, 6) : Move forward
-(2, 6) : Turn left
-(3, 6) : Move forward
-(3, 6) : Grab
-(3, 6) : Turn left
-(3, 6) : Turn left
-(2, 6) : Move forward
-(2, 6) : Turn left
-(2, 7) : Move forward
-(2, 7) : Heal
-(2, 7) : Turn right
-(1, 7) : Move forward
-(1, 7) : Heal
-(1, 7) : Turn left
-(1, 8) : Move forward
-(1, 8) : Heal
-(1, 8) : Turn left
-(2, 8) : Move forward
-(2, 8) : Turn left
-(2, 7) : Move forward
-(2, 7) : Turn right
-(3, 7) : Move forward
-(3, 7) : Shoot
-(3, 7) : Shoot
-(3, 7) : Turn right
-(3, 7) : Shoot
-(3, 7) : Shoot
-(3, 7) : Turn right
-(3, 7) : Heal
-(2, 7) : Move forward
-(1, 7) : Move forward
-(1, 7) : Turn right
-(1, 6) : Move forward
-(1, 5) : Move forward
-(1, 4) : Move forward
-(1, 3) : Move forward
-(1, 2) : Move forward
-(1, 1) : Move forward
-(1, 1) : Climb
+(1, 1): Turn left - Score: -10 - Percepts: None
+(1, 1): Move forward - Score: -20 - Percepts: None
+(1, 2): Turn left - Score: -30 - Percepts: None
+(1, 2): Move forward - Score: -40 - Percepts: None
+(2, 2): Shoot - Score: -140 - Percepts: Stench, Glow
+(2, 2): Turn right - Score: -150 - Percepts: Stench, Glow
+(2, 2): Shoot - Score: -250 - Percepts: Glow, Scream
+(2, 2): Shoot - Score: -350 - Percepts: Glow
+(2, 2): Turn right - Score: -360 - Percepts: Glow
+(2, 2): Turn left - Score: -370 - Percepts: Glow
+(2, 2): Turn left - Score: -380 - Percepts: Glow
+(2, 2): Move forward - Score: -390 - Percepts: Glow
+(3, 2): Grab - Score: -400 - Percepts: Glow
+(3, 2): Move forward - Score: -410 - Percepts: Glow
+(4, 2): Turn left - Score: -420 - Percepts: Breeze
+(4, 2): Turn left - Score: -430 - Percepts: Breeze
+(4, 2): Move forward - Score: -440 - Percepts: Breeze
+(3, 2): Turn right - Score: -450 - Percepts: Glow
+(3, 2): Move forward - Score: -460 - Percepts: Glow
+(3, 1): Turn left - Score: -470 - Percepts: Breeze
+(3, 1): Turn left - Score: -480 - Percepts: Breeze
+(3, 1): Move forward - Score: -490 - Percepts: Breeze
+(3, 2): Move forward - Score: -500 - Percepts: Glow
+(3, 3): Grab - Score: -510 - Percepts: None
+(3, 3): Turn right - Score: -520 - Percepts: None
+(3, 3): Move forward - Score: -530 - Percepts: None
+(2, 3): Move forward - Score: -540 - Percepts: None
+(1, 3): Turn left - Score: -550 - Percepts: None
+(1, 3): Move forward - Score: -560 - Percepts: None
+(1, 4): Shoot - Score: -660 - Percepts: Scream
+(1, 4): Shoot - Score: -760 - Percepts: None
+(1, 4): Turn right - Score: -770 - Percepts: None
+(1, 4): Turn left - Score: -780 - Percepts: None
+(1, 4): Turn left - Score: -790 - Percepts: None
+(1, 4): Move forward - Score: -800 - Percepts: None
+(2, 4): Move forward - Score: -810 - Percepts: None
+(3, 4): Grab - Score: 4190 - Percepts: Breeze
+(3, 4): Turn left - Score: 4180 - Percepts: Breeze
+(3, 4): Move forward - Score: 4170 - Percepts: Breeze
+(3, 3): Turn right - Score: 4160 - Percepts: None
+(3, 3): Move forward - Score: 4150 - Percepts: None
+(4, 3): Grab - Score: 9150 - Percepts: None
+(4, 3): Move forward - Score: 9140 - Percepts: None
+(5, 3): Shoot - Score: 9040 - Percepts: Stench, Breeze, Glow
+(5, 3): Turn right - Score: 9030 - Percepts: Stench, Breeze, Glow
+(5, 3): Shoot - Score: 8930 - Percepts: Breeze, Glow, Scream
+(5, 3): Shoot - Score: 8830 - Percepts: Breeze, Glow
+(5, 3): Turn right - Score: 8820 - Percepts: Breeze, Glow
+(5, 3): Move forward - Score: 8810 - Percepts: Breeze, Glow
+(4, 3): Turn left - Score: 8800 - Percepts: None
+(4, 3): Move forward - Score: 8790 - Percepts: None
+(4, 4): Shoot - Score: 8690 - Percepts: Whiff, Scream
+(4, 4): Shoot - Score: 8590 - Percepts: Whiff
+(4, 4): Turn right - Score: 8580 - Percepts: Whiff
+(4, 4): Turn left - Score: 8570 - Percepts: Whiff
+(4, 4): Turn left - Score: 8560 - Percepts: Whiff
+(4, 4): Move forward - Score: 8550 - Percepts: Whiff
+(5, 4): Move forward - Score: 8540 - Percepts: None
+(6, 4): Shoot - Score: 8440 - Percepts: Stench, Glow
+(6, 4): Turn right - Score: 8430 - Percepts: Stench, Glow
+(6, 4): Shoot - Score: 8330 - Percepts: Glow, Scream
+(6, 4): Shoot - Score: 8230 - Percepts: Glow
+(6, 4): Turn right - Score: 8220 - Percepts: Glow
+(6, 4): Turn left - Score: 8210 - Percepts: Glow
+(6, 4): Turn left - Score: 8200 - Percepts: Glow
+(6, 4): Move forward - Score: 8190 - Percepts: Glow
+(7, 4): Grab - Score: 13190 - Percepts: Stench, Breeze, Glow
+(7, 4): Shoot - Score: 13090 - Percepts: Stench, Breeze, Glow
+(7, 4): Turn right - Score: 13080 - Percepts: Stench, Breeze, Glow
+(7, 4): Shoot - Score: 12980 - Percepts: Stench, Breeze, Glow
+(7, 4): Turn right - Score: 12970 - Percepts: Stench, Breeze, Glow
+(7, 4): Turn right - Score: 12960 - Percepts: Stench, Breeze, Glow
+(7, 4): Shoot - Score: 12860 - Percepts: Breeze, Glow, Scream
+(7, 4): Shoot - Score: 12760 - Percepts: Breeze, Glow
+(7, 4): Turn left - Score: 12750 - Percepts: Breeze, Glow
+(7, 4): Move forward - Score: 12740 - Percepts: Breeze, Glow
+(6, 4): Turn right - Score: 12730 - Percepts: Glow
+(6, 4): Move forward - Score: 12720 - Percepts: Glow
+(6, 3): Grab - Score: 17720 - Percepts: Glow
+(6, 3): Grab - Score: 17710 - Percepts: Glow
+(6, 3): Turn right - Score: 17700 - Percepts: Glow
+(6, 3): Move forward - Score: 17690 - Percepts: Glow
+(7, 3): Grab - Score: 17680 - Percepts: Glow
+(7, 3): Move forward - Score: 17670 - Percepts: Glow
+(8, 3): Grab - Score: 17660 - Percepts: Breeze
+(8, 3): Turn left - Score: 17650 - Percepts: Breeze
+(8, 3): Turn left - Score: 17640 - Percepts: Breeze
+(8, 3): Move forward - Score: 17630 - Percepts: Breeze
+(7, 3): Turn right - Score: 17620 - Percepts: None
+(7, 3): Move forward - Score: 17610 - Percepts: None
+(7, 2): Turn left - Score: 17600 - Percepts: None
+(7, 2): Move forward - Score: 17590 - Percepts: None
+(6, 2): Grab - Score: 22590 - Percepts: Breeze, Whiff
+(6, 2): Turn left - Score: 22580 - Percepts: Breeze, Whiff
+(6, 2): Turn left - Score: 22570 - Percepts: Breeze, Whiff
+(6, 2): Move forward - Score: 22560 - Percepts: Breeze, Whiff
+(7, 2): Move forward - Score: 22550 - Percepts: None
+(8, 2): Move forward - Score: 22540 - Percepts: None
+(9, 2): Shoot - Score: 22440 - Percepts: Stench, Breeze, Glow, Scream
+(9, 2): Shoot - Score: 22340 - Percepts: Stench, Breeze, Glow
+(9, 2): Turn right - Score: 22330 - Percepts: Stench, Breeze, Glow
+(9, 2): Turn right - Score: 22320 - Percepts: Stench, Breeze, Glow
+(9, 2): Turn right - Score: 22310 - Percepts: Stench, Breeze, Glow
+(9, 2): Shoot - Score: 22210 - Percepts: Stench, Breeze, Glow, Scream
+(9, 2): Shoot - Score: 22110 - Percepts: Breeze, Glow, Scream
+(9, 2): Shoot - Score: 22010 - Percepts: Breeze, Glow
+(9, 2): Turn left - Score: 22000 - Percepts: Breeze, Glow
+(9, 2): Move forward - Score: 21990 - Percepts: Breeze, Glow
+(8, 2): Turn right - Score: 21980 - Percepts: None
+(8, 2): Move forward - Score: 21970 - Percepts: None
+(8, 1): Turn left - Score: 21960 - Percepts: Glow
+(8, 1): Move forward - Score: 21950 - Percepts: Glow
+(7, 1): Grab - Score: 26950 - Percepts: Whiff
+(7, 1): Turn left - Score: 26940 - Percepts: Whiff
+(7, 1): Turn left - Score: 26930 - Percepts: Whiff
+(7, 1): Move forward - Score: 26920 - Percepts: Whiff
+(8, 1): Move forward - Score: 26910 - Percepts: Glow
+(9, 1): Grab - Score: 31910 - Percepts: None
+(9, 1): Grab - Score: 31900 - Percepts: None
+(9, 1): Move forward - Score: 31890 - Percepts: None
+(10, 1): Turn right - Score: 31880 - Percepts: None
+(10, 1): Move forward - Score: 31870 - Percepts: None
+(10, 2): Move forward - Score: 31860 - Percepts: None
+(10, 3): Turn left - Score: 31850 - Percepts: Breeze
+(10, 3): Turn left - Score: 31840 - Percepts: Breeze
+(10, 3): Move forward - Score: 31830 - Percepts: Breeze
+(10, 2): Turn left - Score: 31820 - Percepts: None
+(10, 2): Move forward - Score: 31810 - Percepts: None
+(9, 2): Move forward - Score: 31800 - Percepts: Breeze
+(8, 2): Turn left - Score: 31790 - Percepts: None
+(8, 2): Move forward - Score: 31780 - Percepts: None
+(8, 3): Turn right - Score: 31770 - Percepts: Breeze
+(8, 3): Move forward - Score: 31760 - Percepts: Breeze
+(7, 3): Turn left - Score: 31750 - Percepts: None
+(7, 3): Move forward - Score: 31740 - Percepts: None
+(7, 4): Turn right - Score: 31730 - Percepts: Breeze
+(7, 4): Move forward - Score: 31720 - Percepts: Breeze
+(6, 4): Turn left - Score: 31710 - Percepts: None
+(6, 4): Move forward - Score: 31700 - Percepts: None
+(6, 5): Turn right - Score: 31690 - Percepts: Breeze
+(6, 5): Move forward - Score: 31680 - Percepts: Breeze
+(5, 5): Move forward - Score: 31670 - Percepts: Whiff
+(4, 5): Turn right - Score: 31650 - Percepts: Breeze
+(4, 5): Move forward - Score: 31640 - Percepts: Breeze
+(4, 4): Turn left - Score: 31630 - Percepts: Whiff
+(4, 4): Move forward - Score: 31620 - Percepts: Whiff
+(3, 4): Move forward - Score: 31610 - Percepts: Breeze
+(2, 4): Turn left - Score: 31600 - Percepts: None
+(2, 4): Move forward - Score: 31590 - Percepts: None
+(2, 5): Turn right - Score: 31580 - Percepts: Breeze, Glow
+(2, 5): Move forward - Score: 31570 - Percepts: Breeze, Glow
+(1, 5): Turn left - Score: 31560 - Percepts: None
+(1, 5): Move forward - Score: 31550 - Percepts: None
+(1, 6): Turn left - Score: 31540 - Percepts: Glow
+(1, 6): Move forward - Score: 31530 - Percepts: Glow
+(2, 6): Grab - Score: 31520 - Percepts: Whiff, Glow
+(2, 6): Turn left - Score: 31510 - Percepts: Whiff, Glow
+(2, 6): Turn left - Score: 31500 - Percepts: Whiff, Glow
+(2, 6): Move forward - Score: 31490 - Percepts: Whiff, Glow
+(1, 6): Turn left - Score: 31480 - Percepts: None
+(1, 6): Move forward - Score: 31470 - Percepts: None
+(1, 7): Shoot - Score: 31370 - Percepts: Whiff, Scream
+(1, 7): Shoot - Score: 31270 - Percepts: Whiff
+(1, 7): Turn right - Score: 31260 - Percepts: Whiff
+(1, 7): Turn right - Score: 31250 - Percepts: Whiff
+(1, 7): Move forward - Score: 31240 - Percepts: Whiff
+(1, 6): Move forward - Score: 31230 - Percepts: None
+(1, 5): Move forward - Score: 31220 - Percepts: None
+(1, 4): Move forward - Score: 31210 - Percepts: None
+(1, 3): Move forward - Score: 31200 - Percepts: None
+(1, 2): Move forward - Score: 31190 - Percepts: None
+(1, 1): Turn right - Score: 31180 - Percepts: None
+(1, 1): Move forward - Score: 31170 - Percepts: None
+(2, 1): Grab - Score: 36170 - Percepts: None
+(2, 1): Move forward - Score: 36160 - Percepts: None
+(3, 1): Turn right - Score: 36150 - Percepts: Breeze
+(3, 1): Move forward - Score: 36140 - Percepts: Breeze
+(3, 2): Turn left - Score: 36130 - Percepts: None
+(3, 2): Move forward - Score: 36120 - Percepts: None
+(4, 2): Turn right - Score: 36110 - Percepts: Breeze
+(4, 2): Move forward - Score: 36100 - Percepts: Breeze
+(4, 3): Move forward - Score: 36090 - Percepts: None
+(4, 4): Move forward - Score: 36080 - Percepts: Whiff
+(4, 5): Turn left - Score: 36060 - Percepts: Breeze
+(4, 5): Turn left - Score: 36050 - Percepts: Breeze
+(4, 5): Move forward - Score: 36040 - Percepts: Breeze
+(4, 4): Move forward - Score: 36030 - Percepts: Whiff
+(4, 3): Turn right - Score: 36020 - Percepts: None
+(4, 3): Move forward - Score: 36010 - Percepts: None
+(5, 3): Move forward - Score: 36000 - Percepts: Breeze
+(6, 3): Turn left - Score: 35990 - Percepts: None
+(6, 3): Move forward - Score: 35980 - Percepts: None
+(6, 2): Move forward - Score: 35970 - Percepts: Breeze, Whiff
+(6, 1): Turn left - Score: 35950 - Percepts: None
+(6, 1): Move forward - Score: 35940 - Percepts: None
+(5, 1): Heal - Score: 35930 - Percepts: Breeze, Whiff
+(5, 1): Turn left - Score: 35920 - Percepts: Breeze, Whiff
+(5, 1): Turn left - Score: 35910 - Percepts: Breeze, Whiff
+(5, 1): Move forward - Score: 35900 - Percepts: Breeze, Whiff
+(6, 1): Heal - Score: 35880 - Percepts: None
+(6, 1): Turn right - Score: 35870 - Percepts: None
+(6, 1): Move forward - Score: 35860 - Percepts: None
+(6, 2): Heal - Score: 35850 - Percepts: Breeze, Whiff
+(6, 2): Move forward - Score: 35840 - Percepts: Breeze, Whiff
+(6, 3): Move forward - Score: 35830 - Percepts: None
+(6, 4): Turn right - Score: 35820 - Percepts: None
+(6, 4): Move forward - Score: 35810 - Percepts: None
+(5, 4): Turn left - Score: 35800 - Percepts: None
+(5, 4): Move forward - Score: 35790 - Percepts: None
+(5, 5): Move forward - Score: 35780 - Percepts: Whiff
+(5, 6): Turn left - Score: 35770 - Percepts: Breeze, Glow
+(5, 6): Turn left - Score: 35760 - Percepts: Breeze, Glow
+(5, 6): Move forward - Score: 35750 - Percepts: Breeze, Glow
+(5, 5): Turn left - Score: 35740 - Percepts: Whiff
+(5, 5): Move forward - Score: 35730 - Percepts: Whiff
+(4, 5): Turn right - Score: 35710 - Percepts: Breeze
+(4, 5): Move forward - Score: 35700 - Percepts: Breeze
+(4, 4): Turn left - Score: 35690 - Percepts: Whiff
+(4, 4): Move forward - Score: 35680 - Percepts: Whiff
+(3, 4): Move forward - Score: 35670 - Percepts: Breeze
+(2, 4): Turn left - Score: 35660 - Percepts: None
+(2, 4): Move forward - Score: 35650 - Percepts: None
+(2, 5): Move forward - Score: 35640 - Percepts: Breeze
+(2, 6): Turn left - Score: 35630 - Percepts: Whiff, Glow
+(2, 6): Move forward - Score: 35620 - Percepts: Whiff, Glow
+(3, 6): Grab - Score: 35610 - Percepts: Breeze, Whiff
+(3, 6): Turn left - Score: 35600 - Percepts: Breeze, Whiff
+(3, 6): Turn left - Score: 35590 - Percepts: Breeze, Whiff
+(3, 6): Move forward - Score: 35580 - Percepts: Breeze, Whiff
+(2, 6): Turn left - Score: 35570 - Percepts: Whiff
+(2, 6): Move forward - Score: 35560 - Percepts: Whiff
+(2, 7): Heal - Score: 35540 - Percepts: Whiff
+(2, 7): Turn right - Score: 35530 - Percepts: Whiff
+(2, 7): Move forward - Score: 35520 - Percepts: Whiff
+(1, 7): Heal - Score: 35510 - Percepts: Whiff
+(1, 7): Turn left - Score: 35500 - Percepts: Whiff
+(1, 7): Move forward - Score: 35490 - Percepts: Whiff
+(1, 8): Heal - Score: 35480 - Percepts: Whiff
+(1, 8): Turn left - Score: 35470 - Percepts: Whiff
+(1, 8): Move forward - Score: 35460 - Percepts: Whiff
+(2, 8): Turn left - Score: 35450 - Percepts: Stench, Whiff, Glow
+(2, 8): Move forward - Score: 35440 - Percepts: Stench, Whiff, Glow
+(2, 7): Turn right - Score: 35420 - Percepts: Whiff
+(2, 7): Move forward - Score: 35410 - Percepts: Whiff
+(3, 7): Shoot - Score: 35300 - Percepts: Stench, Whiff, Glow, Scream
+(3, 7): Shoot - Score: 35200 - Percepts: Stench, Whiff, Glow
+(3, 7): Turn right - Score: 35190 - Percepts: Stench, Whiff, Glow
+(3, 7): Shoot - Score: 35090 - Percepts: Whiff, Glow, Scream
+(3, 7): Shoot - Score: 34990 - Percepts: Whiff, Glow
+(3, 7): Turn right - Score: 34980 - Percepts: Whiff, Glow
+(3, 7): Heal - Score: 34970 - Percepts: Whiff, Glow
+(3, 7): Move forward - Score: 34960 - Percepts: Whiff, Glow
+(2, 7): Move forward - Score: 34940 - Percepts: Whiff
+(1, 7): Turn right - Score: 34930 - Percepts: Whiff
+(1, 7): Move forward - Score: 34920 - Percepts: Whiff
+(1, 6): Move forward - Score: 34910 - Percepts: None
+(1, 5): Move forward - Score: 34900 - Percepts: None
+(1, 4): Move forward - Score: 34890 - Percepts: None
+(1, 3): Move forward - Score: 34880 - Percepts: None
+(1, 2): Move forward - Score: 34870 - Percepts: None
+(1, 1): Climb - Score: 34880 - Percepts: None

@@ -73,9 +73,9 @@ class Gui:
         if(self.state == "resume"):
             return
         self.clearMessage()
-        self.filename, outFile = self.getMazeOption()
+        self.filename, self.outputFile = self.getMazeOption()
         self.program.load(self.filename, self.isVisible.get())
-        self.program.getActionList(outFile)
+        self.program.getActionList()
 
         
     def getMazeOption(self):
@@ -97,6 +97,40 @@ class Gui:
         elif state == "resume":
             self.pauseresume_button.config(image=self.resume_image, text="Resume")
         self.state = state
+
+    def writeOutputFile(self):
+        log = self.messsageOutput.get(1.0, END)
+        output = self.convertLog(log)
+        with open(self.outputFile, "w") as f:
+            f.write(output)
+
+    def convertLog(self, log):
+        # Split the input string into sections for each step
+        entries = log.strip().split('\n\n')
+
+        result = []
+        for entry in entries:
+            # Split each section into lines
+            lines = entry.split('\n')
+            
+            # Extract the position, action, percepts, and score
+            position = lines[0].split(": ")[1].strip("()")
+            action = lines[1].split(": ")[1].strip()
+            percepts = lines[2].split(": ")[1].strip()
+            score = lines[3].split(": ")[1].strip()
+            
+            # Prepare the percepts list
+            percept_list = percepts.split(', ') if percepts else ["None"]
+            formatted_percepts = ", ".join(percept_list)
+            
+            # Prepare the output in the required format
+            formatted_entry = f"({position}): {action} - Score: {score} - Percepts: {formatted_percepts}"
+            
+            result.append(formatted_entry)
+    
+        # Join the formatted entries into a single string with newlines
+        return "\n".join(result)
+
         
     def init(self):
         self.sidebar = Canvas(
